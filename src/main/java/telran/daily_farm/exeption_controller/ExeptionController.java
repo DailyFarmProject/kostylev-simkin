@@ -20,6 +20,12 @@ public class ExeptionController {
 	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token: " + ex.getMessage());
 	}
 	
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+	}
+
+	
 	 @ExceptionHandler(ResponseStatusException.class)
 	    public ResponseEntity<String> handleResponseStatusException(ResponseStatusException ex) {
 	        return ResponseEntity.status(ex.getStatusCode()).body(ex.getReason());

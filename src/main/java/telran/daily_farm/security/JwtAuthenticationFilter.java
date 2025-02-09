@@ -22,7 +22,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtUtil;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
             try {
-                String username = jwtUtil.extractUsername(token);
+                String username = jwtUtil.extractUserEmail(token);
                 log.debug("username - " + username);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 

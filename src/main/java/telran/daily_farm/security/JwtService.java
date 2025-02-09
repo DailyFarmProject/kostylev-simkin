@@ -6,16 +6,16 @@ import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
 
-@Component
+@Service
 @Slf4j
-public class JwtUtil {
+public class JwtService {
     @Value("${jwt.secret:MySuperSecretKeyMySuperSecretKeyMySuperSecretKey}")
     private String secretKey;
 
@@ -27,14 +27,19 @@ public class JwtUtil {
         return  key;
     }
 
-    public String generateToken(String email) {
+    public String generateToken(String uuid, String email) {
     	String token = Jwts.builder()
-                .subject(email)
+                .subject(uuid)
+                .claim("email", email)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSigningKey()) 
                 .compact();
         return token;
+    }
+    
+    public String extractUserId(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
     @SuppressWarnings("deprecation")
@@ -49,8 +54,8 @@ public class JwtUtil {
         return getParser().parseClaimsJws(token).getBody();  
     }
 
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+    public String extractUserEmail(String token) {
+        return extractClaim(token, claims -> claims.get("email", String.class));
     }
 
     public Date extractExpiration(String token) {
@@ -63,7 +68,7 @@ public class JwtUtil {
     }
 
     public boolean isTokenValid(String token, String email) {
-        return extractUsername(token).equals(email) && !isTokenExpired(token);
+        return extractUserEmail(token).equals(email) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

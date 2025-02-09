@@ -28,19 +28,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Client> clientOptional = clientRepo.findById(username);
+        Optional<Client> clientOptional = clientRepo.findByEmail(username);
         if (clientOptional.isPresent()) {
             Client client = clientOptional.get();
             return new User(client.getEmail(), client.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_CLIENT")));
         }
 
-        Optional<Farmer> farmerOptional = farmerRepo.findById(username);
+        Optional<Farmer> farmerOptional = farmerRepo.findByEmail(username);
         if (farmerOptional.isPresent()) {
         	Farmer farmer = farmerOptional.get();
-        	User user = new User(farmer.getEmail(), farmer.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_FARMER")));
-        	log.debug("farmer exists role - " + user.getAuthorities());
-            //return new User(farmer.getEmail(), farmer.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_FARMER")));\
-        	return user;
+            return new UserDetailsWithId( farmer.getEmail(), farmer.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
         }
 
         throw new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND);

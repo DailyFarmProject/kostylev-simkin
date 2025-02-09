@@ -1,8 +1,10 @@
 package telran.daily_farm.api.dto;
 
-import static daily_farm.messages.ErrorMessages.*;
+import static telran.daily_farm.api.messages.ErrorMessages.*;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,13 +16,28 @@ import lombok.NoArgsConstructor;
 @Getter
 public class AddressDto {
 	
-	@Pattern(regexp = "austria|belgium|bulgaria|croatia|cyprus|czech republic|denmark|estonia|finland|france|germany|greece|hungary|ireland|italy|latvia|lithuania|luxembourg|"
-			+ "malta|netherlands|poland|portugal|romania|slovakia|slovenia|spain|sweden", message = NOT_VALID_COUNTRY)
-	String country;
-	
-	@Pattern(regexp = "^[A-Z][a-z]+(?:[ -][A-Z][a-z]+)*$", message = NOT_VALID_CITY)
-	String city;
-	String street;
+	 @NotBlank(message = COUNTRY_REQUIRED)
+	    private String country;
+
+	    @NotBlank(message = REGION_REQUIRED)
+	    private String region;
+
+	    @NotBlank(message = CITY_REQUIRED)
+	    private String city;
+
+	    @NotBlank(message = POSTAL_CODE_REQUIRED)
+	    @Pattern(regexp = "\\d{4,10}", message = POSTAL_CODE_REQUIRED)
+	    private String postalCode;
+
+	    private String street;
+
+	    @Size(max = 10, message = HOUSE_NUMBER_TOO_LONG)
+	    private String houseNumber;
+
+	    private String placeName;  
+
+	    @Size(max = 255, message = ADDITIONAL_INFO_TOO_LONG)
+	    private String additionalInfo;
 	
 
 }
