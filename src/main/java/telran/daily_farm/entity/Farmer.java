@@ -81,14 +81,5 @@ public class Farmer {
 						.build();
 	}
 	
-	public FarmerDto build() {
-		return FarmerDto.builder().email(email)
-						.lastName(lastName)
-						.firstName(firstName)
-						.phone(phone)
-						.password(password)
-						.address(address)
-						.paypalDetails(paypalDetails)
-						.build();
-	}
+
 }

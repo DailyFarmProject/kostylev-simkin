@@ -4,9 +4,11 @@ public interface ErrorMessages {
 
 	String NOT_VALID_COUNTRY = "The provided country is not valid.";
 	String NOT_VALID_CITY = "The provided city is not valid.";
+	String NOT_VALID_REGION = "The provided region is not valid.";
+	String NOT_VALID_STREET = "The provided street is not valid.";
 
 	String NAME_IS_NOT_VALID = "The provided name is not valid.";
-	String LAST_NAME_IS_NOT_VALID = "The provided last name is not valid.";
+	String LAST_NAME_IS_NOT_VALID = "The provided last last name is not valid.";
 
 	String PHONE_NUMBER_IS_NOT_VALID = "The provided phone number is not valid.";
 	String EMAIL_IS_NOT_VALID = "The provided email is not valid.";
@@ -43,5 +45,7 @@ public interface ErrorMessages {
 	String LONGITUDE_REQUIRED = "Longitude is required";
 	String INVALID_LATITUDE = "Latitude must be between -90 and 90 degrees";
 	String INVALID_LONGITUDE = "Longitude must be between -180 and 180 degrees";
-
+	String ADDRESS_VALIDATION_FAILED = "Address validation failed: low relevance or incorrect place type";
+	String COULD_NOT_RETRIVE_COORDINATES = "Could not retrieve coordinates";
+	String WRONG_COORDINATES = "No location or places were found for the given input";
 }

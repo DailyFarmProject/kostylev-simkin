@@ -4,6 +4,7 @@ package telran.daily_farm.security;
 
 import  static daily_farm.messages.ErrorMessages.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import telran.daily_farm.client.repo.ClientRepository;
 import telran.daily_farm.entity.Client;
 import telran.daily_farm.entity.Farmer;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final FarmerRepository farmerRepo;
     private final ClientRepository clientRepo;
@@ -27,7 +29,9 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public String authenticate(String email, String password) {
+    	
         Optional<Farmer> farmerOptional = farmerRepo.findByEmail(email);
+        
         Optional<Client> clientOptional = clientRepo.findByEmail(email);
 
 //        if (clientOptional.isPresent()) {
@@ -40,7 +44,9 @@ public class AuthService {
 //        } else
         if (farmerOptional.isPresent()) {
         	Farmer farmer = farmerOptional.get();
+        	log.debug("Authenticate. Farmer " + farmer.getEmail() + " exists");
             if (passwordEncoder.matches(password, farmer.getPassword())) {
+            	log.debug("Authenticate. Password is valid");
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
                 String uuid = farmer.getId().toString();
                 return jwtService.generateToken(uuid,email);

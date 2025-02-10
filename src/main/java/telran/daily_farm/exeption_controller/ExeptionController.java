@@ -2,6 +2,8 @@ package telran.daily_farm.exeption_controller;
 
 import java.util.stream.Collectors;
 
+import javax.security.sasl.AuthenticationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,7 +19,7 @@ public class ExeptionController {
 	
 	@ExceptionHandler(JwtException.class)
 	public ResponseEntity<String> handleJwtException(JwtException ex) {
-	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token: " + ex.getMessage());
+	    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
 	}
 	
 	@ExceptionHandler(RuntimeException.class)

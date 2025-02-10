@@ -37,27 +37,20 @@ public class FarmerController {
 			@RequestHeader(value = "X-Latitude", required = false) Double latitude,
 			@RequestHeader(value = "X-Longitude", required = false) Double longitude) {
 
+		log.error("Controller. Request for registration new farmer - " + farmerDto.getEmail());
 		if (!hasValidLocation(farmerDto, latitude, longitude)) 
 		        return ResponseEntity.badRequest().body(LOCATION_REQUIRED);
-
-		if (latitude != null && longitude != null) {
+		
+		
+		
+		if (latitude != null && longitude != null && farmerDto.getCoordinates() == null) {
 			farmerDto.setCoordinates(new CoordinatesDto(latitude, longitude));
+			log.debug("Controller. There is not coordinates in body. Update coordinates in dto from header");
 		}
-
 		return farmerService.registerFarmer(farmerDto);
 	}
 
-	private boolean hasValidLocation(@Valid FarmerDto farmerDto, Double latitude, Double longitude) {
-		 boolean hasValidCoordinates = farmerDto.getCoordinates() != null
-		            && farmerDto.getCoordinates().getLatitude() != null
-		            && farmerDto.getCoordinates().getLongitude() != null;
 
-		    boolean hasValidAddress = farmerDto.getAddress() != null
-		    		&& farmerDto.getAddress().getCountry() != null
-					&& farmerDto.getAddress().getCity() != null && farmerDto.getAddress().getPostalCode() != null;
-
-		    return latitude != null && longitude != null || hasValidCoordinates || hasValidAddress;
-	}
 
 	@PostMapping(FARMER_LOGIN)
 	public String login(@RequestBody LoginRequestDto loginRequestDto) {
@@ -75,6 +68,26 @@ public class FarmerController {
 	@PreAuthorize("hasRole(ROLE_FARMER)")
 	public ResponseEntity<String> removeFarmer(@AuthenticationPrincipal UserDetailsWithId user) {
 		return farmerService.removeFarmer(user.getId());
+	}
+	
+	
+	
+	private boolean hasValidLocation(@Valid FarmerDto farmerDto, Double latitude, Double longitude) {
+			
+		 	boolean hasCoordinatesInBody = farmerDto.getCoordinates() != null
+		            && farmerDto.getCoordinates().getLatitude() != null
+		            && farmerDto.getCoordinates().getLongitude() != null;
+		 	log.debug("Controller. Checking is request contains coordinate in body. Result - "+ hasCoordinatesInBody );
+		 	
+		    boolean hasAddressInBody = farmerDto.getAddress() != null
+		    		&& farmerDto.getAddress().getCountry() != null
+					&& farmerDto.getAddress().getCity() != null && farmerDto.getAddress().getPostalCode() != null;
+		    log.debug("Controller. Checking is request contains address in body. Result - "+ hasAddressInBody );
+		    
+		    boolean hasCoordinatesInHeader = latitude != null && longitude != null;
+		    log.debug("Controller.Checking is request contains address in header. Result - "+ hasCoordinatesInHeader );
+		    
+		    return  hasCoordinatesInHeader || hasCoordinatesInBody || hasAddressInBody;
 	}
 
 }
