@@ -14,6 +14,7 @@ public interface ErrorMessages {
 	String EMAIL_IS_NOT_VALID = "The provided email is not valid.";
 
 	String PASSWORD_IS_NOT_VALID = "Password must be at least 8 characters long";
+	String OLD_NEW_PASSWORD_REQUARED = "Old password and new password - requared field";
 
 	String PAYPAL_CLIENT_ID_INVALID = "Invalid PayPal Client ID format.";
 	String PAYPAL_SECRET_INVALID = "Invalid PayPal Secret format.";

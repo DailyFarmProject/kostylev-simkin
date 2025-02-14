@@ -25,9 +25,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/farmers/register", "/farmers/login").permitAll()
+                        .requestMatchers("/farmers/register", "/farmers/login", "/farmers/refresh").permitAll()
                         .requestMatchers("/farmers/**").hasRole("FARMER")
-//                        .requestMatchers("/seller/**").hasRole("SELLER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService), UsernamePasswordAuthenticationFilter.class)
