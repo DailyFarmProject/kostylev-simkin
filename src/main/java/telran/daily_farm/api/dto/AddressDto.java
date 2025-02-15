@@ -2,7 +2,6 @@ package telran.daily_farm.api.dto;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;

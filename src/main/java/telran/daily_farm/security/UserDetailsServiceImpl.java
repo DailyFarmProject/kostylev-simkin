@@ -14,6 +14,8 @@ import daily_farm.messages.ErrorMessages;
 import telran.daily_farm.client.repo.ClientRepository;
 import telran.daily_farm.entity.Client;
 import telran.daily_farm.entity.Farmer;
+import telran.daily_farm.entity.FarmerCredential;
+import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
 import telran.daily_farm.farmer.repo.FarmerRepository;
 
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final ClientRepository clientRepo;
     private final FarmerRepository farmerRepo;
+    private final FarmerCredentialRepository credentialRepo;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -37,7 +40,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<Farmer> farmerOptional = farmerRepo.findByEmail(username);
         if (farmerOptional.isPresent()) {
         	Farmer farmer = farmerOptional.get();
-            return new UserDetailsWithId( farmer.getEmail(), farmer.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
+        	FarmerCredential credential = credentialRepo.findByFarmer(farmer);
+            return new UserDetailsWithId( farmer.getEmail(), credential.getHashedPassword(), List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
         }
 
         throw new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND);

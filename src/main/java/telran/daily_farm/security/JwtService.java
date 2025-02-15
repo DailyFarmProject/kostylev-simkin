@@ -16,11 +16,17 @@ import java.util.function.Function;
 @Service
 @Slf4j
 public class JwtService {
-    @Value("${jwt.secret:MySuperSecretKeyMySuperSecretKeyMySuperSecretKey}")
+    @Value("${jwt.secret}")
     private String secretKey;
 
     @Value("${jwt.expiration}")
     private long expirationTime;
+    
+    @Value("${jwt.access.token.validity}")
+    private long accessTokenValidity;
+    
+    @Value("${jwt.refresh.token.validity}")
+    private long refreshTokenValidity ;
 
     private Key getSigningKey() {
     	Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey)); 
@@ -37,6 +43,25 @@ public class JwtService {
                 .compact();
     	log.debug("JwtService. Token for farmer " + email+ "generated and returned to user");
         return token;
+    }
+    public String generateAccessToken(String uuid, String email) {
+        return Jwts.builder()
+        		 .subject(uuid)
+                 .claim("email", email)
+                 .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + accessTokenValidity))
+                .signWith(getSigningKey()) 
+                .compact();
+    }
+
+    public String generateRefreshToken(String uuid, String email) {
+        return Jwts.builder()
+        		 .subject(uuid)
+                 .claim("email", email)
+                 .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenValidity))
+                .signWith(getSigningKey()) 
+                .compact();
     }
     
     public String extractUserId(String token) {
@@ -72,7 +97,7 @@ public class JwtService {
         return extractUserEmail(token).equals(email) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 }

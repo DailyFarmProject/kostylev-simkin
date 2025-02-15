@@ -3,9 +3,19 @@ package telran.daily_farm.api;
 public interface ApiConstants {
 	
 	String FARMER_REGISTER="/farmers/register";
-	String FARMER_EDIT="/farmers/";
 	String FARMER_LOGIN="/farmers/login";
 	String FARMER_REMOVE="/farmers/";
+	String FARMER_REFRESH_TOKEN="/farmers/refresh";
+	String FARMER_CHANGE_PASSWORD="/farmers/password";
+	String FARMER_CHANGE_EMAIL="/farmers/email";
+	
+	String FARMER_EDIT="/farmers/";
+
+	String FARMER_CHANGE_FIRST_LAST_NAME_PASSWORD="/farmers/name";
+	String FARMER_CHANGE_ADDRESS="/farmers/address";
+	String FARMER_CHANGE_COORDINATES="/farmers/coordinates";
+	String FARMER_CHANGE_PHONE="/farmers/phone";
+	
 	
 	
 	String CLIENT_REGISTER="/clients/register";

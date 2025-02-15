@@ -15,7 +15,7 @@ import lombok.Builder;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @ToString
-public class FarmerDto extends BaseUser {
+public class FarmerRegistrationDto extends BaseUser {
 	
 	@Valid
 	AddressDto address;

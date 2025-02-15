@@ -1,6 +1,5 @@
 package telran.daily_farm.security;
 
-
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,41 +17,57 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import daily_farm.messages.ErrorMessages;
 
 import java.io.IOException;
+import java.util.Date;
 
-import javax.security.sasl.AuthenticationException;
 
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private final JwtService jwtUtil;
-    private final UserDetailsService userDetailsService;
+	private final JwtService jwtService;
+	private final UserDetailsService userDetailsService;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
-        String token = request.getHeader("Authorization");
-        log.error("JwtAuthenticationFilter(OncePerRequestFilter). Token received from header ");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-            log.debug("OncePerRequestFilter. Token is not null. ");
-            try {
-                String username = jwtUtil.extractUserEmail(token);
-                log.debug("JwtAuthenticationFilter(OncePerRequestFilter). User name recived from token");
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                log.debug("OncePerRequestFilter. Recived userDetails + role");
-                if (jwtUtil.isTokenValid(token, userDetails.getUsername())) {
-                	 log.debug("OncePerRequestFilter. Token checked - valid");
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }else
-                	throw new JwtException(ErrorMessages.INVALID_TOKEN);
-            } catch (ExpiredJwtException | SecurityException | MalformedJwtException e) {
-//                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ErrorMessages.INVALID_TOKEN);
-         	 throw new JwtException(ErrorMessages.INVALID_TOKEN);
-                
-            }
-        }
-        chain.doFilter(request, response);
-    }
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws ServletException, IOException {
+
+		String requestURI = request.getRequestURI();
+		log.trace("OncePerRequestFilter. requestURI" + requestURI);
+		if (requestURI.equals("/farmers/refresh")) {
+			log.trace("OncePerRequestFilter. Refresh token run");
+			chain.doFilter(request, response);
+			return;
+		}
+
+		String token = request.getHeader("Authorization");
+		log.info("JwtAuthenticationFilter(OncePerRequestFilter). Token received from header " + token);
+		if (token != null && token.startsWith("Bearer ")) {
+			token = token.substring(7);
+			log.trace("OncePerRequestFilter. Token is not null. ");
+			try {
+				String username = jwtService.extractUserEmail(token);
+				log.info("JwtAuthenticationFilter(OncePerRequestFilter). User name recived from token - " + username);
+				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+				log.info("OncePerRequestFilter. Recived userDetails + role");
+				log.info("OncePerRequestFilter. jwtService.isTokenValid - "
+						+ jwtService.isTokenValid(token, userDetails.getUsername()));
+				log.info("OncePerRequestFilter. jwtService.extractExpiration - " + jwtService.extractExpiration(token));
+				log.info("OncePerRequestFilter. Date now - " + new Date());
+				log.info("OncePerRequestFilter. jwtService.extractExpiration - "
+						+ jwtService.extractExpiration(token).after(new Date()));
+				if (jwtService.isTokenValid(token, userDetails.getUsername())
+						&& jwtService.extractExpiration(token).after(new Date())) {
+					log.info("OncePerRequestFilter. Token checked - valid");
+
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+							userDetails, null, userDetails.getAuthorities());
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				} else
+					throw new JwtException(ErrorMessages.INVALID_TOKEN);
+			} catch (ExpiredJwtException | SecurityException | MalformedJwtException e) {
+				throw new JwtException(ErrorMessages.INVALID_TOKEN);
+
+			}
+		}
+		chain.doFilter(request, response);
+	}
 }
