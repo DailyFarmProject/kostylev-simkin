@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import daily_farm.messages.ErrorMessages;
+import static telran.daily_farm.api.messages.ErrorMessages.*;
 
 import java.io.IOException;
 import java.util.Date;
@@ -63,9 +63,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 							userDetails, null, userDetails.getAuthorities());
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				} else
-					throw new JwtException(ErrorMessages.INVALID_TOKEN);
+					throw new JwtException(INVALID_TOKEN);
 			} catch (ExpiredJwtException | SecurityException | MalformedJwtException e) {
-				throw new JwtException(ErrorMessages.INVALID_TOKEN);
+				throw new JwtException(INVALID_TOKEN);
 
 			}
 		}

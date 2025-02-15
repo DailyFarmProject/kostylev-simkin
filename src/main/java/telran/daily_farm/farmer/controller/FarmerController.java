@@ -35,8 +35,8 @@ import telran.daily_farm.security.AuthService;
 import telran.daily_farm.security.JwtService;
 import telran.daily_farm.security.UserDetailsWithId;
 
-import static telran.daily_farm.api.ApiConstants.*;
 import static telran.daily_farm.api.messages.ErrorMessages.*;
+import static telran.daily_farm.api.ApiConstants.*;
 
 @Tag(name = "Farmer API", description = "Methods for farmer")
 @RestController
@@ -69,7 +69,8 @@ public class FarmerController {
 
 	@Operation(summary = "Login of Farmer", description = "Login. Return accessToken and refreshToken", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for login", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginRequestDto.class))))
 	@PostMapping(FARMER_LOGIN)
-	public ResponseEntity<TokensResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
+	public ResponseEntity<TokensResponseDto> login(@RequestBody LoginRequestDto loginRequestDto
+		) {
 		return farmerService.loginFarmer(loginRequestDto);
 	}
 

@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import static daily_farm.messages.ErrorMessages.PASSWORD_IS_NOT_VALID;
 import static telran.daily_farm.api.messages.ErrorMessages.*;
 
 import io.swagger.v3.oas.annotations.media.Schema;
