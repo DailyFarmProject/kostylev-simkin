@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import daily_farm.messages.ErrorMessages;
+import static telran.daily_farm.api.messages.ErrorMessages.*;
 import telran.daily_farm.client.repo.ClientRepository;
 import telran.daily_farm.entity.Client;
 import telran.daily_farm.entity.Farmer;
@@ -44,6 +44,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new UserDetailsWithId( farmer.getEmail(), credential.getHashedPassword(), List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
         }
 
-        throw new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND);
+        throw new UsernameNotFoundException(USER_NOT_FOUND);
     }
 }

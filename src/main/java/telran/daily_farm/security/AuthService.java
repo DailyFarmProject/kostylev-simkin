@@ -1,6 +1,6 @@
 package telran.daily_farm.security;
 
-import static daily_farm.messages.ErrorMessages.*;
+import static telran.daily_farm.api.messages.ErrorMessages.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.daily_farm.api.dto.RefreshTokenResponseDto;

@@ -1,6 +1,6 @@
 package telran.daily_farm.api.dto;
 
-import static daily_farm.messages.ErrorMessages.*;
+import static telran.daily_farm.api.messages.ErrorMessages.*;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

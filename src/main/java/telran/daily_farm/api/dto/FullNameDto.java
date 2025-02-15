@@ -1,7 +1,6 @@
 package telran.daily_farm.api.dto;
 
-import static daily_farm.messages.ErrorMessages.LAST_NAME_IS_NOT_VALID;
-import static daily_farm.messages.ErrorMessages.NAME_IS_NOT_VALID;
+import static telran.daily_farm.api.messages.ErrorMessages.*;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
