@@ -25,7 +25,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/farmers/register", "/farmers/login", "/farmers/refresh").permitAll()
+                        .requestMatchers("/farmers/register", "/farmers/login", "/farmers/refresh","/swagger-ui/**", "/v3/**").permitAll()
                         .requestMatchers("/farmers/**").hasRole("FARMER")
                         .anyRequest().authenticated()
                 )
