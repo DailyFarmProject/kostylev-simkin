@@ -3,6 +3,7 @@ package telran.daily_farm.security;
 import static daily_farm.messages.ErrorMessages.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import telran.daily_farm.api.dto.RefreshTokenResponseDto;
 import telran.daily_farm.api.dto.TokensResponseDto;
 import telran.daily_farm.client.repo.ClientRepository;
 import telran.daily_farm.entity.Client;
@@ -11,6 +12,7 @@ import telran.daily_farm.entity.FarmerCredential;
 import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
 import telran.daily_farm.farmer.repo.FarmerRepository;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -65,7 +67,7 @@ public class AuthService {
 		throw new BadCredentialsException(WRONG_USER_NAME_OR_PASSWORD);
 	}
 
-	public String refreshAccessToken(String refreshToken) {
+	public ResponseEntity<RefreshTokenResponseDto> refreshAccessToken(String refreshToken) {
 		
 		log.info("AuthService. Refresh access token starts - " + refreshToken );
 		
@@ -77,7 +79,7 @@ public class AuthService {
 			log.info("AuthService. Checking data from refreshToken : farmer exists - " + farmerOptional.isPresent());
 			log.info("AuthService. Checking data from refreshToken : credential.getRefreshToken().equals(refreshToken) exists - " + credential.getRefreshToken().equals(refreshToken));
 			log.info("AuthService. Checking data from refreshToken : isTokenExpired - " + jwtService.isTokenExpired(refreshToken));
-			return jwtService.generateAccessToken(id.toString(), farmerOptional.get().getEmail());
+			return ResponseEntity.ok(new RefreshTokenResponseDto(jwtService.generateAccessToken(id.toString(), farmerOptional.get().getEmail())));
 		} else {
 			throw new RuntimeException("Invalid or expired refresh token");
 		}

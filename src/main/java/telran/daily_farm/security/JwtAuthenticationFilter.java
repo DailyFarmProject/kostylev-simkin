@@ -32,7 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String requestURI = request.getRequestURI();
 		log.trace("OncePerRequestFilter. requestURI" + requestURI);
-		if (requestURI.equals("/farmers/refresh")) {
+		if (requestURI.equals("/farmers/refresh") || requestURI.equals("/swagger-ui.html") 
+				|| requestURI.startsWith("/swagger") || requestURI.startsWith("/v3")) {
 			log.trace("OncePerRequestFilter. Refresh token run");
 			chain.doFilter(request, response);
 			return;

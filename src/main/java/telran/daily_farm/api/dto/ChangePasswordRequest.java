@@ -8,15 +8,19 @@ import lombok.NoArgsConstructor;
 import static daily_farm.messages.ErrorMessages.PASSWORD_IS_NOT_VALID;
 import static telran.daily_farm.api.messages.ErrorMessages.*;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @NoArgsConstructor
 @Getter
 public class ChangePasswordRequest {
 
 
+	@Schema(description = "oldPassword", example = "12345678")
 	@NotBlank(message = OLD_NEW_PASSWORD_REQUARED)
 	@Size(min = 8, message = PASSWORD_IS_NOT_VALID)
 	String oldPassword;
 	
+	@Schema(description = "newPassword", example = "123456789")
 	@Size(min = 8, message = PASSWORD_IS_NOT_VALID)
 	@NotBlank(message = OLD_NEW_PASSWORD_REQUARED)
 	String newPassword;
