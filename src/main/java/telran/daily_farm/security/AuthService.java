@@ -75,13 +75,14 @@ public class AuthService {
 		Optional<Farmer> farmerOptional = farmerRepo.findByid(id);
 		FarmerCredential credential = credentialRepo.findByFarmer(new Farmer(id));
 
-		if (farmerOptional.isPresent() && credential.getRefreshToken().equals(refreshToken) && !jwtService.isTokenExpired(refreshToken)) {
+		if (farmerOptional.isPresent() && !credential.getRefreshToken().isBlank() 
+				&& credential.getRefreshToken().equals(refreshToken) && !jwtService.isTokenExpired(refreshToken)) {
 			log.info("AuthService. Checking data from refreshToken : farmer exists - " + farmerOptional.isPresent());
 			log.info("AuthService. Checking data from refreshToken : credential.getRefreshToken().equals(refreshToken) exists - " + credential.getRefreshToken().equals(refreshToken));
 			log.info("AuthService. Checking data from refreshToken : isTokenExpired - " + jwtService.isTokenExpired(refreshToken));
 			return ResponseEntity.ok(new RefreshTokenResponseDto(jwtService.generateAccessToken(id.toString(), farmerOptional.get().getEmail())));
 		} else {
-			throw new RuntimeException("Invalid or expired refresh token");
+			throw new BadCredentialsException(INVALID_TOKEN);
 		}
 	}
 }

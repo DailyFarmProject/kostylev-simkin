@@ -20,7 +20,7 @@ public class LoginRequestDto {
 	@Email( message = EMAIL_IS_NOT_VALID)
 	String email;
 	
-	@Schema(description = "password", example = "1234567890", nullable = false)
+	@Schema(description = "password", example = "12345678", nullable = false)
 	@Size(min = 8, message = PASSWORD_IS_NOT_VALID)
     private String password;
 

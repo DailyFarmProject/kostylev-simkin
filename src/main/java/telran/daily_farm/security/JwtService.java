@@ -39,6 +39,7 @@ public class JwtService {
                 .claim("email", email)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                
                 .signWith(getSigningKey()) 
                 .compact();
     	log.debug("JwtService. Token for farmer " + email+ "generated and returned to user");

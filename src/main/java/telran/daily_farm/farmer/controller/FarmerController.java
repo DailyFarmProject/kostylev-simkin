@@ -30,12 +30,17 @@ import telran.daily_farm.api.dto.LoginRequestDto;
 import telran.daily_farm.api.dto.RefreshTokenRequestDto;
 import telran.daily_farm.api.dto.RefreshTokenResponseDto;
 import telran.daily_farm.api.dto.TokensResponseDto;
+import telran.daily_farm.entity.Farmer;
+import telran.daily_farm.entity.FarmerCredential;
 import telran.daily_farm.farmer.service.IFarmer;
 import telran.daily_farm.security.AuthService;
 import telran.daily_farm.security.JwtService;
 import telran.daily_farm.security.UserDetailsWithId;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
+
+import java.util.UUID;
+
 import static telran.daily_farm.api.ApiConstants.*;
 
 @Tag(name = "Farmer API", description = "Methods for farmer")
@@ -56,7 +61,7 @@ public class FarmerController {
 			@RequestHeader(value = "X-Latitude", required = false) Double latitude,
 			@RequestHeader(value = "X-Longitude", required = false) Double longitude) {
 
-		log.error("Controller. Request for registration new farmer - " + farmerDto.getEmail());
+		log.info("Controller. Request for registration new farmer - " + farmerDto.getEmail());
 		if (!hasValidLocation(farmerDto, latitude, longitude))
 			return ResponseEntity.badRequest().body(LOCATION_REQUIRED);
 
@@ -65,6 +70,14 @@ public class FarmerController {
 			log.debug("Controller. There is not coordinates in body. Update coordinates in dto from header");
 		}
 		return farmerService.registerFarmer(farmerDto);
+	}
+	
+	@Operation(summary = "Logout of Farmer", description = "Logout of Farmer. Removes refreshToken, Adds accessToken to blacklist", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for logout", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))))
+	@DeleteMapping(FARMER_LOGOUT)
+	public ResponseEntity<String> logoutFarmer(	@AuthenticationPrincipal UserDetailsWithId user,
+			@Parameter(description = "JWT токен", required = true) @RequestHeader("Authorization") String token) {
+		farmerService.logoutFarmer(user.getId(), token);
+		return ResponseEntity.ok("Logged out successfully");
 	}
 
 	@Operation(summary = "Login of Farmer", description = "Login. Return accessToken and refreshToken", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for login", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginRequestDto.class))))

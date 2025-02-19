@@ -21,6 +21,7 @@ public interface IFarmer {
 	ResponseEntity<String> registerFarmer(@Valid FarmerRegistrationDto farmerDto);
 	ResponseEntity<String> removeFarmer(UUID id);
 	ResponseEntity<TokensResponseDto> loginFarmer(@Valid LoginRequestDto loginRequestDto);
+	ResponseEntity<String> logoutFarmer(UUID id, String token);
 	ResponseEntity<TokensResponseDto> updatePassword(UUID uuid, @Valid ChangePasswordRequest changePasswordDto);
 	ResponseEntity<String> updateAddress(UUID uuid, @Valid AddressDto addressDto);
 	ResponseEntity<String> updateCoordinates(UUID uuid, @Valid CoordinatesDto coordinatesDto);

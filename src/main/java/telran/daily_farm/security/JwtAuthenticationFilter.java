@@ -25,26 +25,33 @@ import java.util.Date;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtService jwtService;
 	private final UserDetailsService userDetailsService;
+	private final TokenBlacklistService blackListService;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 
 		String requestURI = request.getRequestURI();
-		log.trace("OncePerRequestFilter. requestURI" + requestURI);
+		log.info("OncePerRequestFilter. requestURI" + requestURI);
 		if (requestURI.equals("/farmers/refresh") || requestURI.equals("/swagger-ui.html") 
 				|| requestURI.startsWith("/swagger") || requestURI.startsWith("/v3")) {
-			log.trace("OncePerRequestFilter. Refresh token run");
+			log.info("OncePerRequestFilter. Refresh token run");
 			chain.doFilter(request, response);
 			return;
 		}
 
 		String token = request.getHeader("Authorization");
 		log.info("JwtAuthenticationFilter(OncePerRequestFilter). Token received from header " + token);
-		if (token != null && token.startsWith("Bearer ")) {
+		if (token != null && token.startsWith("Bearer ") ) {
 			token = token.substring(7);
-			log.trace("OncePerRequestFilter. Token is not null. ");
+			log.info("OncePerRequestFilter. Token is not null and starts with Bearer. ");
+			
 			try {
+				if (blackListService.isBlacklisted(token)) {
+					log.info("JwtAuthenticationFilter(OncePerRequestFilter). Token is blacklisted ");
+					throw new JwtException(INVALID_TOKEN);
+				}
+				log.info("OncePerRequestFilter. token is expires - " + jwtService.isTokenExpired(token));
 				String username = jwtService.extractUserEmail(token);
 				log.info("JwtAuthenticationFilter(OncePerRequestFilter). User name recived from token - " + username);
 				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -65,7 +72,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				} else
 					throw new JwtException(INVALID_TOKEN);
 			} catch (ExpiredJwtException | SecurityException | MalformedJwtException e) {
-				throw new JwtException(INVALID_TOKEN);
+				log.error("error" + e.getLocalizedMessage());
+				request.setAttribute("JWT_ERROR", e.getMessage());
+		        throw new JwtException(e.getMessage());
 
 			}
 		}

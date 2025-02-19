@@ -28,6 +28,7 @@ import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
 import telran.daily_farm.farmer.repo.FarmerRepository;
 import telran.daily_farm.location.service.ILocationService;
 import telran.daily_farm.security.AuthService;
+import telran.daily_farm.security.TokenBlacklistService;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
 
@@ -43,6 +44,7 @@ public class FarmerService implements IFarmer {
 	private final FarmerCredentialRepository credentialRepo;
 	private final CoordinatesRepository coordinatesRepo;
 	private final AddressRepository addressRepo;
+	private final TokenBlacklistService blackListService;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthService authService;
 	
@@ -126,7 +128,6 @@ public class FarmerService implements IFarmer {
 
 
 	@Override
-	@Transactional
 	public ResponseEntity<TokensResponseDto> loginFarmer(LoginRequestDto loginRequestDto) {
 		log.debug("Service. Request to login farmer -" + loginRequestDto.getEmail());
 
@@ -140,6 +141,7 @@ public class FarmerService implements IFarmer {
 	public ResponseEntity<String> removeFarmer(UUID id) {
 		if (!farmerRepo.existsById(id))
 			throw new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS);
+		log.info("user exists");
 		farmerRepo.deleteById(id);
 		return ResponseEntity.ok("Farmer removed");
 	}
@@ -230,5 +232,20 @@ public class FarmerService implements IFarmer {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	@Transactional
+	public ResponseEntity<String> logoutFarmer(UUID id, String token) {
+		log.info("Service. Logout starts");
+		FarmerCredential credential = credentialRepo.findByFarmer(new Farmer(id));
+		log.info("Service. Got credential - refresh token - " + credential.getRefreshToken());
+		log.info("Service. Got access token - " + token);
+		token = token.substring(7);
+		blackListService.addToBlacklist(token);
+		log.info("Service. AccessToken added to black list - " + token);
+		credential.setRefreshToken("");
+		log.info("Service. RefreshToken remuved from credential");
+		return ResponseEntity.ok("Farmer removed");
 	}
 }
