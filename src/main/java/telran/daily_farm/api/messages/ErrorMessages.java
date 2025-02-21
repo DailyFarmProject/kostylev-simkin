@@ -28,6 +28,9 @@ public interface ErrorMessages {
 
 	String FARMER_WITH_THIS_EMAIL_EXISTS = "Farmer with this email exists";
 	String FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS = "Farmer with this email is not exists";
+	
+	String CLIENT_WITH_THIS_EMAIL_EXISTS = "Client with this email exists";
+	String CLIENT_WITH_THIS_EMAIL_IS_NOT_EXISTS = "Client with this email does not exist";
 
 	String ERROR_EDIT_OWN_ACCOUNT_ONLY = "You can edit only your own account";
 	String ERROR_DELETE_OWN_ACCOUNT_ONLY = "You can delete only your own account";

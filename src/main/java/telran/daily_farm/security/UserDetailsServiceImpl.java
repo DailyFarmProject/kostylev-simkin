@@ -34,7 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<Client> clientOptional = clientRepo.findByEmail(username);
         if (clientOptional.isPresent()) {
             Client client = clientOptional.get();
-            return new User(client.getEmail(), client.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_CLIENT")));
+            return new User(client.getEmail(), client.getCredential().getHashedPassword(), List.of(new SimpleGrantedAuthority("ROLE_CLIENT")));
         }
 
         Optional<Farmer> farmerOptional = farmerRepo.findByEmail(username);

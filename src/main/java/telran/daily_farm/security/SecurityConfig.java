@@ -25,13 +25,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/farmers/register", "/farmers/login", "/farmers/refresh","/swagger-ui/**", "/v3/**").permitAll()
-                        .requestMatchers("/farmers/**").hasRole("FARMER")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll() // temporarily open all
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
 
     @Bean
     AuthenticationManager authenticationManager() {
