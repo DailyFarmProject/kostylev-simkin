@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,6 +73,23 @@ public class FarmerController {
 		return farmerService.registerFarmer(farmerDto);
 	}
 	
+	@Operation(summary = "Email verification", description = "Email verification. Send link to farmer's email with verification token. User need to follow the link for verification(set credential is activated field to true)", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Verification token", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))))
+	@GetMapping(FARMER_EMAIL_VERIFICATION)
+	public ResponseEntity<String> emailVerification(@RequestParam String token){
+		log.info("Controller. Email verification starts - " + token);
+		return farmerService.emailVerification(token);
+		
+	}
+	
+	@Operation(summary = "Resend verification link", description = "Resend verification link to email", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Resend verification token", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))))
+	@GetMapping(FARMER_EMAIL_VERIFICATION_RESEND)
+	public ResponseEntity<String> getVerificationLink(@RequestParam String email){
+		log.info("Controller. Resend verification starts - ");
+		return farmerService.getVerificationLink(email);
+		
+	}
+	
+	
 	@Operation(summary = "Logout of Farmer", description = "Logout of Farmer. Removes refreshToken, Adds accessToken to blacklist", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for logout", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))))
 	@DeleteMapping(FARMER_LOGOUT)
 	public ResponseEntity<String> logoutFarmer(	@AuthenticationPrincipal UserDetailsWithId user,
@@ -82,8 +100,7 @@ public class FarmerController {
 
 	@Operation(summary = "Login of Farmer", description = "Login. Return accessToken and refreshToken", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Data for login", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginRequestDto.class))))
 	@PostMapping(FARMER_LOGIN)
-	public ResponseEntity<TokensResponseDto> login(@RequestBody LoginRequestDto loginRequestDto
-		) {
+	public ResponseEntity<TokensResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
 		return farmerService.loginFarmer(loginRequestDto);
 	}
 

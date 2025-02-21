@@ -19,8 +19,8 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long expirationTime;
+    @Value("${jwt.verification.token.validity}")
+    private long verificationTikenValidity;
     
     @Value("${jwt.access.token.validity}")
     private long accessTokenValidity;
@@ -33,12 +33,12 @@ public class JwtService {
         return  key;
     }
 
-    public String generateToken(String uuid, String email) {
+    public String generateVerificationToken(String uuid, String email) {
     	String token = Jwts.builder()
                 .subject(uuid)
                 .claim("email", email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .expiration(new Date(System.currentTimeMillis() + verificationTikenValidity))
                 
                 .signWith(getSigningKey()) 
                 .compact();

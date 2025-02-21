@@ -3,6 +3,8 @@ package telran.daily_farm.api;
 public interface ApiConstants {
 	
 	String FARMER_REGISTER="/farmers/register";
+	String FARMER_EMAIL_VERIFICATION="/farmers/verify-email";
+	String FARMER_EMAIL_VERIFICATION_RESEND="/farmers/verify-email/resend";
 	String FARMER_LOGIN="/farmers/login";
 	String FARMER_LOGOUT="/farmers/logout";
 	String FARMER_REMOVE="/farmers/";

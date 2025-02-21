@@ -1,4 +1,4 @@
-package entity;
+package telran.daily_farm.security.entity;
 
 import java.time.Instant;
 

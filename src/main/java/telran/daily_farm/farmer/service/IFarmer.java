@@ -18,16 +18,18 @@ import telran.daily_farm.api.dto.TokensResponseDto;
 
 public interface IFarmer {
 	
-	ResponseEntity<String> registerFarmer(@Valid FarmerRegistrationDto farmerDto);
+	ResponseEntity<String> registerFarmer(FarmerRegistrationDto farmerDto);
+	ResponseEntity<String> emailVerification(String verificationToken);
+	ResponseEntity<String> getVerificationLink(String email);
 	ResponseEntity<String> removeFarmer(UUID id);
-	ResponseEntity<TokensResponseDto> loginFarmer(@Valid LoginRequestDto loginRequestDto);
+	ResponseEntity<TokensResponseDto> loginFarmer(LoginRequestDto loginRequestDto);
 	ResponseEntity<String> logoutFarmer(UUID id, String token);
-	ResponseEntity<TokensResponseDto> updatePassword(UUID uuid, @Valid ChangePasswordRequest changePasswordDto);
-	ResponseEntity<String> updateAddress(UUID uuid, @Valid AddressDto addressDto);
-	ResponseEntity<String> updateCoordinates(UUID uuid, @Valid CoordinatesDto coordinatesDto);
-	ResponseEntity<TokensResponseDto> updateEmail(UUID uuid, @Valid String newEmail);
-	ResponseEntity<String> updatePhone(UUID uuid, @Valid String newPhone);
-	ResponseEntity<String> changeName(UUID uuid, @Valid FullNameDto fullname);
+	ResponseEntity<TokensResponseDto> updatePassword(UUID uuid, ChangePasswordRequest changePasswordDto);
+	ResponseEntity<String> updateAddress(UUID uuid,  AddressDto addressDto);
+	ResponseEntity<String> updateCoordinates(UUID uuid, CoordinatesDto coordinatesDto);
+	ResponseEntity<TokensResponseDto> updateEmail(UUID uuid, String newEmail);
+	ResponseEntity<String> updatePhone(UUID uuid, String newPhone);
+	ResponseEntity<String> changeName(UUID uuid, FullNameDto fullname);
 	ResponseEntity<TokensResponseDto> updateFarmer(UUID id, FarmerUpdateDataRequestDto farmerDto);
 
 }

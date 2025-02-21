@@ -39,7 +39,11 @@ public class FarmerCredential {
     private LocalDateTime createdAt;
     
     @Column(nullable = false)
+    private boolean isVerificated;
+    
+    @Column(nullable = false)
     private LocalDateTime password_last_updated;
     
+  
     private String refreshToken;
 }

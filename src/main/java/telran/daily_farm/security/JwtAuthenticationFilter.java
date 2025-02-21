@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
+import static telran.daily_farm.api.ApiConstants.*;
 
 import java.io.IOException;
 import java.util.Date;
@@ -33,7 +34,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String requestURI = request.getRequestURI();
 		log.info("OncePerRequestFilter. requestURI" + requestURI);
-		if (requestURI.equals("/farmers/refresh") || requestURI.equals("/swagger-ui.html") 
+		if (requestURI.equals(FARMER_REFRESH_TOKEN) || requestURI.equals(FARMER_EMAIL_VERIFICATION)
+				|| requestURI.equals(FARMER_EMAIL_VERIFICATION_RESEND)
+				|| requestURI.equals("/swagger-ui.html") 
 				|| requestURI.startsWith("/swagger") || requestURI.startsWith("/v3")) {
 			log.info("OncePerRequestFilter. Refresh token run");
 			chain.doFilter(request, response);
