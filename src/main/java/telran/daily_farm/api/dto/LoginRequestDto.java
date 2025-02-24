@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class LoginRequestDto {
 	
 	@Schema(description = "email", example = "bob@bobmail.bob", nullable = false)
-	@NotBlank( message = EMAIL_IS_NOT_VALID)
+	@NotBlank( message = EMAIL_IS_REQUIRED)
 	@Email( message = EMAIL_IS_NOT_VALID)
 	String email;
 	

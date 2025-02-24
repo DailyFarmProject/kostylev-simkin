@@ -34,11 +34,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String requestURI = request.getRequestURI();
 		log.info("OncePerRequestFilter. requestURI" + requestURI);
-		if (requestURI.equals(FARMER_REFRESH_TOKEN) || requestURI.equals(FARMER_EMAIL_VERIFICATION)
+		if (requestURI.equals(FARMER_REFRESH_TOKEN) 
+				|| requestURI.equals(FARMER_EMAIL_VERIFICATION)
 				|| requestURI.equals(FARMER_EMAIL_VERIFICATION_RESEND)
+				|| requestURI.equals(RESET_PASSWORD)
+				|| requestURI.equals(FARMER_CHANGE_EMAIL)
+				|| requestURI.equals(FARMER_NEW_EMAIL_VERIFICATION)
 				|| requestURI.equals("/swagger-ui.html") 
-				|| requestURI.startsWith("/swagger") || requestURI.startsWith("/v3")) {
-			log.info("OncePerRequestFilter. Refresh token run");
+				|| requestURI.startsWith("/swagger") 
+				|| requestURI.startsWith("/v3")) {
+			log.info("OncePerRequestFilter. Request does not need token");
 			chain.doFilter(request, response);
 			return;
 		}

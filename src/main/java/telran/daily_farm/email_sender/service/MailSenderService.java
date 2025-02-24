@@ -2,7 +2,6 @@ package telran.daily_farm.email_sender.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
+import static telran.daily_farm.api.ApiConstants.*;
 
 
 
@@ -23,10 +23,11 @@ public class MailSenderService implements IMailSender {
 
     
 
+    
+    
 	@Override
 	public ResponseEntity<String> sendEmailVerification(String email, String verificationToken) {
-		log.debug("sendEmailVerification starts" );
-		String link = "http://localhost:8080/farmers/verify-email?token="+ verificationToken;
+		String link = "http://localhost:8080"+FARMER_EMAIL_VERIFICATION+"?token="+ verificationToken;
 		System.out.println("generated link - " + link);
 		 String htmlContent =  
 				 "<!DOCTYPE html>" +
@@ -65,15 +66,90 @@ public class MailSenderService implements IMailSender {
 		} catch (MessagingException e) {
 			return ResponseEntity.ok("Error with sending error");
 		}
-	
-//		smm.setTo(email);
-//		smm.setSubject(subject);
-//		smm.setFrom("daily-farm@gmail.com");
-//		smm.setText(message);
-//		sender.send(smm);
 		  
 		return ResponseEntity.ok("Check your email for verification");
 
+	}
+
+
+
+	public ResponseEntity<String> sendResetPassword(String email, String genPassword) {
+		String htmlContent =  
+				 "<!DOCTYPE html>" +
+				            "<html>" +
+				            "<head><meta charset='UTF-8'></head>" +
+				            "<body style='font-family: Arial, sans-serif; text-align: center;'>" +
+				            "<h2>Reset password</h2>" +
+				            "<p>To login you can use password below:</p>" +
+
+				            "<p" +
+				            "style='display: inline-block; padding: 12px 24px; font-size: 16px; " +
+				            "color: white; background-color: #28a745; text-decoration: none; " +
+				            "border-radius: 5px; font-weight: bold;'>"+ genPassword +"</a>" +
+
+				            "<p style='font-size: 16px;'>We strongly recommend changing your password as soon as possible</p>" +
+				           
+				            "</body></html>";
+
+		sendEmail(email, "Email verification", htmlContent);
+		
+		return ResponseEntity.ok("Check your email for verification");
+		
+	}
+
+
+
+	public ResponseEntity<String> sendChangeEmailVerification(String email, String verificationTokenForUpdateEmail) {
+		String link = "http://localhost:8080"+FARMER_NEW_EMAIL_VERIFICATION+"?token="+ verificationTokenForUpdateEmail;
+		System.out.println("generated link - " + link);
+		 String htmlContent =  
+				 "<!DOCTYPE html>" +
+				            "<html>" +
+				            "<head><meta charset='UTF-8'></head>" +
+				            "<body style='font-family: Arial, sans-serif; text-align: center;'>" +
+				            "<h2>Confirmation of email change</h2>" +
+				            "<p>To complete email update, click the button below:</p>" +
+
+				            "<a href='" + link + "'" +
+				            "style='display: inline-block; padding: 12px 24px; font-size: 16px; " +
+				            "color: white; background-color: #28a745; text-decoration: none; " +
+				            "border-radius: 5px; font-weight: bold;'>Confirm changes</a>" +
+
+				            "<p>If the button does not work, copy and open the following link manually:</p>" +
+				            "<p style='font-size: 8px;><a href='" + link + "'>" + link + "</a></p>" +
+				            "</body></html>";
+
+		sendEmail(email, "Email verification", htmlContent);
+		
+		return ResponseEntity.ok("Check your email for verification");
+	}
+
+
+
+	public ResponseEntity<String> sendVerificationTokenToNewEmail(String newEmailFromToken, String token) {
+		String link = "http://localhost:8080" + FARMER_CHANGE_EMAIL + "?token="+ token;
+		System.out.println("generated link - " + link);
+		 String htmlContent =  
+				 "<!DOCTYPE html>" +
+				            "<html>" +
+				            "<head><meta charset='UTF-8'></head>" +
+				            "<body style='font-family: Arial, sans-serif; text-align: center;'>" +
+				            "<h2>Confirmation of email change</h2>" +
+				            "<p>To complete email update, click the button below:</p>" +
+
+				            "<a href='" + link + "'" +
+				            "style='display: inline-block; padding: 12px 24px; font-size: 16px; " +
+				            "color: white; background-color: #28a745; text-decoration: none; " +
+				            "border-radius: 5px; font-weight: bold;'>Confirm changes</a>" +
+
+				            "<p>If the button does not work, copy and open the following link manually:</p>" +
+				            "<p style='font-size: 8px;><a href='" + link + "'>" + link + "</a></p>" +
+				            "</body></html>";
+
+		sendEmail(newEmailFromToken, "Email verification", htmlContent);
+		
+		return ResponseEntity.ok("Check your email for verification");
+		
 	}
 }
 

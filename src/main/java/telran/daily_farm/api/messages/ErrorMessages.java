@@ -2,23 +2,31 @@ package telran.daily_farm.api.messages;
 
 public interface ErrorMessages {
 
+	// not in use
 	String NOT_VALID_COUNTRY = "The provided country is not valid.";
 	String NOT_VALID_CITY = "The provided city is not valid.";
 	String NOT_VALID_REGION = "The provided region is not valid.";
 	String NOT_VALID_STREET = "The provided street is not valid.";
-
-	String NAME_IS_NOT_VALID = "The provided name is not valid.";
-	String LAST_NAME_IS_NOT_VALID = "The provided last last name is not valid.";
+//
+//	String NAME_IS_NOT_VALID = "The provided name is not valid.";
+//	String LAST_NAME_IS_NOT_VALID = "The provided last last name is not valid.";
+//	String PAYPAL_CLIENT_ID_INVALID = "Invalid PayPal Client ID format.";
+//	String PAYPAL_SECRET_INVALID = "Invalid PayPal Secret format.";
+//	String PAYPAL_DETAILS_IS_REQUIRED = "PayPal field is requiared.";
+	
+	
+	////
 
 	String PHONE_NUMBER_IS_NOT_VALID = "The provided phone number is not valid.";
 	String EMAIL_IS_NOT_VALID = "The provided email is not valid.";
-
+	String COMPANY_NAME_IS_REQUIRED = "Company name is required.";
+	String PHONE_IS_REQUIRED = "Phone number is required.";
+	String EMAIL_IS_REQUIRED = "Email is required";
 	String PASSWORD_IS_NOT_VALID = "Password must be at least 8 characters long";
+	String PASSWORD_IS_REQUIRED =  "Password is required";
 	String OLD_NEW_PASSWORD_REQUARED = "Old password and new password - requared field";
 
-	String PAYPAL_CLIENT_ID_INVALID = "Invalid PayPal Client ID format.";
-	String PAYPAL_SECRET_INVALID = "Invalid PayPal Secret format.";
-	String PAYPAL_DETAILS_IS_REQUIRED = "PayPal field is requiared.";
+
 
 	String WRONG_USER_TYPE = "Wrong user type.";
 
