@@ -24,16 +24,16 @@ import lombok.Setter;
 @Builder
 @Setter
 @Getter
-@Table(name = "client_credentials")
-public class ClientCredential {
+@Table(name = "customer_credentials")
+public class CustomerCredential {
     @Id
     @GeneratedValue
     @UuidGenerator
     private UUID id;
 
     @OneToOne
-    @JoinColumn(name = "client_id", referencedColumnName = "id", nullable = false)
-    private Client client;
+    @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
+    private Customer customer;
 
     @Column(nullable = false)
     private String hashedPassword;

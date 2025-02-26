@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientDto extends BaseUser{
+public class CustomerDto extends BaseUser{
 
 	AddressDto address;
 	

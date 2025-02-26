@@ -9,11 +9,11 @@ import lombok.*;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @ToString
-public class ClientRegistrationDto extends BaseUser {
+public class CustomerRegistrationDto extends BaseUser {
 
-    @Schema(description = "Client's city (optional)", example = "Tel Aviv")
+    @Schema(description = "Customer's city (optional)", example = "Tel Aviv")
     private String city;
 
-    @Schema(description = "Client's coordinates (optional, used for delivery)")
+    @Schema(description = "Customer's coordinates (optional, used for delivery)")
     private CoordinatesDto coordinates;
 }

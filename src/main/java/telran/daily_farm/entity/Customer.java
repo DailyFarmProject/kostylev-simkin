@@ -15,7 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import telran.daily_farm.api.dto.ClientRegistrationDto;
+import telran.daily_farm.api.dto.CustomerRegistrationDto;
 
 @Entity
 @NoArgsConstructor
@@ -23,8 +23,8 @@ import telran.daily_farm.api.dto.ClientRegistrationDto;
 @Getter
 @Setter
 @Builder
-@Table(name = "clients")
-public class Client {
+@Table(name = "customers")
+public class Customer {
 
     @Id
     @GeneratedValue
@@ -46,16 +46,16 @@ public class Client {
     @Column(nullable = true)
     private String city;
 
-    @OneToOne(mappedBy = "client", cascade = jakarta.persistence.CascadeType.ALL)
-    private ClientCredential credential;
+    @OneToOne(mappedBy = "customer", cascade = jakarta.persistence.CascadeType.ALL)
+    private CustomerCredential credential;
     
-	   public Client(UUID id) { 
+	   public Customer(UUID id) { 
 	        this.id = id;
 	    }
 
 
-    public static Client of(ClientRegistrationDto dto) {
-        return Client.builder()
+    public static Customer of(CustomerRegistrationDto dto) {
+        return Customer.builder()
             .email(dto.getEmail())
             .firstName(dto.getFirstName())
             .lastName(dto.getLastName())

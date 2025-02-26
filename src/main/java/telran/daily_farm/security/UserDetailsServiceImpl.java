@@ -11,8 +11,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
-import telran.daily_farm.client.repo.ClientRepository;
-import telran.daily_farm.entity.Client;
+
+import telran.daily_farm.customer.repo.CustomerRepository;
+import telran.daily_farm.entity.Customer;
 import telran.daily_farm.entity.Farmer;
 import telran.daily_farm.entity.FarmerCredential;
 import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
@@ -25,16 +26,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
-    private final ClientRepository clientRepo;
+    private final CustomerRepository clientRepo;
     private final FarmerRepository farmerRepo;
     private final FarmerCredentialRepository credentialRepo;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<Client> clientOptional = clientRepo.findByEmail(username);
+        Optional<Customer> clientOptional = clientRepo.findByEmail(username);
         if (clientOptional.isPresent()) {
-            Client client = clientOptional.get();
-            return new User(client.getEmail(), client.getCredential().getHashedPassword(), List.of(new SimpleGrantedAuthority("ROLE_CLIENT")));
+            Customer customer = clientOptional.get();
+            return new User(customer.getEmail(), customer.getCredential().getHashedPassword(), List.of(new SimpleGrantedAuthority("ROLE_CLIENT")));
         }
 
         Optional<Farmer> farmerOptional = farmerRepo.findByEmail(username);

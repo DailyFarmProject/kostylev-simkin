@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.daily_farm.api.dto.RefreshTokenResponseDto;
 import telran.daily_farm.api.dto.TokensResponseDto;
-import telran.daily_farm.client.repo.ClientRepository;
-import telran.daily_farm.entity.Client;
+import telran.daily_farm.customer.repo.CustomerRepository;
+import telran.daily_farm.entity.Customer;
 import telran.daily_farm.entity.Farmer;
 import telran.daily_farm.entity.FarmerCredential;
 import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
@@ -28,7 +28,7 @@ import java.util.UUID;
 @Slf4j
 public class AuthService {
 	private final FarmerRepository farmerRepo;
-	private final ClientRepository clientRepo;
+	private final CustomerRepository customerRepo;
 	private final FarmerCredentialRepository credentialRepo;
 	private final JwtService jwtService;
 	private final PasswordEncoder passwordEncoder;
@@ -38,16 +38,22 @@ public class AuthService {
 
 		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(email);
 
-		Optional<Client> clientOptional = clientRepo.findByEmail(email);
+		Optional<Customer> customerOptional = customerRepo.findByEmail(email);
 
-//        if (clientOptional.isPresent()) {
-//        	Client client = clientOptional.get();
-//            if (passwordEncoder.matches(password, client.getPassword())) {
-//                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-//                String uuid = client.getId().toString();
-//                return jwtService.generateToken(uuid, email);
-//            }
-//        } else
+        if (customerOptional.isPresent()) {
+            Customer customer = customerOptional.get();
+            if (passwordEncoder.matches(password, customer.getCredential().getHashedPassword())) {
+                log.info("AuthService. Customer authenticated: {}", email);
+                
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+                
+                String uuid = customer.getId().toString();
+                String accessToken = jwtService.generateAccessToken(uuid, email);
+                String refreshToken = jwtService.generateRefreshToken(uuid, email);
+                
+                return new TokensResponseDto(accessToken, refreshToken);
+            }
+        } else
 		if (farmerOptional.isPresent()) {
 			Farmer farmer = farmerOptional.get();
 			FarmerCredential credential = credentialRepo.findByFarmer(farmer);

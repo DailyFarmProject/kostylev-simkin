@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ClientUpdateDataRequestDto {
+public class CustomerUpdateDataRequestDto {
     
     @Schema(description = "firstName", example = "John")
     @Pattern(regexp = "[A-Z][a-z]{1,20}([-\\s][A-Z][a-z]{1,20})*", message = NAME_IS_NOT_VALID)
@@ -30,6 +30,6 @@ public class ClientUpdateDataRequestDto {
     @Email(message = EMAIL_IS_NOT_VALID)
     private String email;
 
-    @Schema(description = "Client's city (optional)", example = "Tel Aviv")
+    @Schema(description = "Customer's city (optional)", example = "Tel Aviv")
     private String city;
 }

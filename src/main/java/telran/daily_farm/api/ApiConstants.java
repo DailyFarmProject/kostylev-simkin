@@ -18,15 +18,15 @@ public interface ApiConstants {
 	
 	
 	
-    String CLIENT_REGISTER = "/clients/register";
-    String CLIENT_LOGIN = "/clients/login";
-    String CLIENT_REMOVE = "/clients/";
-    String CLIENT_REFRESH_TOKEN = "/clients/refresh";
-    String CLIENT_CHANGE_PASSWORD = "/clients/password";
-    String CLIENT_CHANGE_EMAIL = "/clients/email";
-    String CLIENT_EDIT = "/clients/";
-    String CLIENT_CHANGE_FIRST_LAST_NAME = "/clients/name";
-    String CLIENT_CHANGE_PHONE = "/clients/phone";
+    String CUSTOMER_REGISTER = "/customer/register";
+    String CUSTOMER_LOGIN = "/customer/login";
+    String CUSTOMER_REMOVE = "/customer/";
+    String CUSTOMER_REFRESH_TOKEN = "/customer/refresh";
+    String CUSTOMER_CHANGE_PASSWORD = "/customer/password";
+    String CUSTOMER_CHANGE_EMAIL = "/customer/email";
+    String CUSTOMER_EDIT = "/customer/";
+    String CUSTOMER_CHANGE_FIRST_LAST_NAME = "/customer/name";
+    String CUSTOMER_CHANGE_PHONE = "/customer/phone";
     
     
     String CLIENT_VIEW_PRODUCTS = "/clients/products"; // View available products
