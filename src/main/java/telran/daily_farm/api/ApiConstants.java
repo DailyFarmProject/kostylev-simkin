@@ -29,16 +29,6 @@ public interface ApiConstants {
     String CUSTOMER_CHANGE_PHONE = "/customer/phone";
     
     
-    String CLIENT_VIEW_PRODUCTS = "/clients/products"; // View available products
-    String CLIENT_ADD_TO_CART = "/clients/cart/add"; // Add product to cart
-    String CLIENT_REMOVE_FROM_CART = "/clients/cart/remove"; // Remove product from cart
-    String CLIENT_GET_CART = "/clients/cart"; // Get cart contents
-    String CLIENT_CREATE_ORDER = "/clients/order"; // Create a new order
-    String CLIENT_GET_ORDERS = "/clients/orders"; // Get order history
-    String CLIENT_GET_ORDER_DETAILS = "/clients/orders/{id}"; // Get details of a specific order
-    
-    
-    String CLIENT_SEND_FEEDBACK = "/clients/feedback"; // Submit product feedback
-    String CLIENT_GET_SUPPORT = "/clients/support"; // Contact support service
+
 
 }

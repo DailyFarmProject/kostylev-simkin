@@ -16,20 +16,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtService jwtService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter; 
     private final UserDetailsServiceImpl userDetailsService;
 
+    
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // temporarily open all
+                        .requestMatchers("/auth/login", "/farmer/register", "/customer/register").permitAll() 
+                        .requestMatchers("/farmer/**").hasRole("FARMER") 
+                        .requestMatchers("/customer/**").hasRole("CUSTOMER") 
+                        .anyRequest().authenticated() 
                 )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) 
                 .build();
     }
-
 
     @Bean
     AuthenticationManager authenticationManager() {
