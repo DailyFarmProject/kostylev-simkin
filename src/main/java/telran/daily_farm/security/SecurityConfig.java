@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import static telran.daily_farm.api.ApiConstants.*;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,7 +27,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/farmer/register", "/customer/register").permitAll() 
+                        .requestMatchers(CUSTOMER_REGISTER,CUSTOMER_LOGIN, CUSTOMER_REFRESH_TOKEN,CUSTOMER_CHANGE_EMAIL, FARMER_REGISTER, FARMER_LOGIN, FARMER_REFRESH_TOKEN,
+                        		 FARMER_CHANGE_EMAIL,  "/swagger-ui/**", "/v3/**").permitAll() 
                         .requestMatchers("/farmer/**").hasRole("FARMER") 
                         .requestMatchers("/customer/**").hasRole("CUSTOMER") 
                         .anyRequest().authenticated() 
