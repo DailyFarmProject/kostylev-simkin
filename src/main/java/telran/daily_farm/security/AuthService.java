@@ -5,8 +5,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.daily_farm.api.dto.RefreshTokenResponseDto;
 import telran.daily_farm.api.dto.TokensResponseDto;
-import telran.daily_farm.client.repo.ClientRepository;
-import telran.daily_farm.entity.Client;
+import telran.daily_farm.customer.repo.CustomerRepository;
+import telran.daily_farm.customer.repo.CustomerCredentialRepository;
+import telran.daily_farm.entity.Customer;
+import telran.daily_farm.entity.CustomerCredential;
 import telran.daily_farm.entity.Farmer;
 import telran.daily_farm.entity.FarmerCredential;
 import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
@@ -16,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -87,3 +88,4 @@ public class AuthService {
 		}
 	}
 }
+

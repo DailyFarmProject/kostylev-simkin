@@ -19,11 +19,12 @@ import static telran.daily_farm.api.ApiConstants.*;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtService jwtService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter; 
     private final UserDetailsServiceImpl userDetailsService;
     private final TokenBlacklistService blackListService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
+    
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
@@ -38,6 +39,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(jwtAuthEntryPoint) )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService,blackListService), UsernamePasswordAuthenticationFilter.class)
+
                 .build();
     }
 
