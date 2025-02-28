@@ -13,15 +13,27 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 import org.springframework.web.server.ResponseStatusException;
 
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
+@Slf4j
 public class ExeptionController {
 	
+//	@ExceptionHandler(JwtException.class)
+//	public ResponseEntity<String> handleJwtException(JwtException ex) {
+//		
+//		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+//	}
+//	
+
 	@ExceptionHandler(JwtException.class)
-	public ResponseEntity<String> handleJwtException(JwtException ex) {
-		
-	    return new ResponseEntity<String>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-	}
+	  public ResponseEntity<String> handleJwtException(HttpServletRequest request) {
+	        String message = (String) request.getAttribute("JWT_ERROR");
+	        log.error("@ExceptionHandler "  + message);
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message != null ? message : "Invalid token");
+	    }
+	
 	
 	@ExceptionHandler(BadCredentialsException.class)
 	public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {

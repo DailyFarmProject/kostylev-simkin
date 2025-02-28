@@ -1,6 +1,8 @@
 package telran.daily_farm.security;
 
 import lombok.RequiredArgsConstructor;
+
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +21,8 @@ import static telran.daily_farm.api.ApiConstants.*;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter; 
     private final UserDetailsServiceImpl userDetailsService;
+    private final TokenBlacklistService blackListService;
+    private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
     
     @Bean
@@ -27,13 +31,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(CUSTOMER_REGISTER,CUSTOMER_LOGIN, CUSTOMER_REFRESH_TOKEN,CUSTOMER_CHANGE_EMAIL, FARMER_REGISTER, FARMER_LOGIN, FARMER_REFRESH_TOKEN,
-                        		 FARMER_CHANGE_EMAIL,  "/swagger-ui/**", "/v3/**").permitAll() 
-                        .requestMatchers("/farmer/**").hasRole("FARMER") 
-                        .requestMatchers("/customer/**").hasRole("CUSTOMER") 
-                        .anyRequest().authenticated() 
+                        .requestMatchers(FARMER_REGISTER, FARMER_LOGIN, FARMER_REFRESH_TOKEN, FARMER_EMAIL_VERIFICATION,
+                        		FARMER_EMAIL_VERIFICATION_RESEND, RESET_PASSWORD, FARMER_CHANGE_EMAIL, FARMER_NEW_EMAIL_VERIFICATION, "/swagger-ui/**", "/v3/**").permitAll()
+                        .requestMatchers("/farmer/**").hasRole("FARMER")
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) 
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthEntryPoint) )
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService,blackListService), UsernamePasswordAuthenticationFilter.class)
+
                 .build();
     }
 
@@ -49,4 +55,6 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
+  
 }

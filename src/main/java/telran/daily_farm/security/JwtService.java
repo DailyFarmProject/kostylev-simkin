@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.security.SecureRandom;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -19,8 +20,8 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long expirationTime;
+    @Value("${jwt.verification.token.validity}")
+    private long verificationTikenValidity;
     
     @Value("${jwt.access.token.validity}")
     private long accessTokenValidity;
@@ -32,13 +33,41 @@ public class JwtService {
     	Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey)); 
         return  key;
     }
+    
+    public String generatePassword(int length) {
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_+=<>?";
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
 
-    public String generateToken(String uuid, String email) {
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(chars.length());
+            password.append(chars.charAt(index));
+        }
+        
+        return password.toString();
+    }
+    
+    public String generateVerificationTokenForUpdateEmail(String uuid, String email, String newEmail) {
+    	String token = Jwts.builder()
+                .subject(uuid)
+                .claim("email", email)
+                .claim("newEmail", newEmail)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + verificationTikenValidity))
+                
+                .signWith(getSigningKey()) 
+                .compact();
+    	log.debug("JwtService. Token for farmer " + email+ "generated and returned to user");
+        return token;
+    }
+
+    public String generateVerificationToken(String uuid, String email) {
     	String token = Jwts.builder()
                 .subject(uuid)
                 .claim("email", email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .expiration(new Date(System.currentTimeMillis() + verificationTikenValidity))
+                
                 .signWith(getSigningKey()) 
                 .compact();
     	log.debug("JwtService. Token for farmer " + email+ "generated and returned to user");
@@ -82,6 +111,10 @@ public class JwtService {
 
     public String extractUserEmail(String token) {
         return extractClaim(token, claims -> claims.get("email", String.class));
+    }
+    
+    public String extractUserNewEmail(String token) {
+        return extractClaim(token, claims -> claims.get("newEmail", String.class));
     }
 
     public Date extractExpiration(String token) {

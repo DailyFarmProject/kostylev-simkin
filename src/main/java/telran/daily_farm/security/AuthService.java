@@ -28,89 +28,64 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService {
-    private final FarmerRepository farmerRepo;
-    private final CustomerRepository customerRepo;
-    private final FarmerCredentialRepository farmerCredentialRepo;
-    private final CustomerCredentialRepository customerCredentialRepo;
-    private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
+	private final FarmerRepository farmerRepo;
+	private final ClientRepository clientRepo;
+	private final FarmerCredentialRepository credentialRepo;
+	private final JwtService jwtService;
+	private final PasswordEncoder passwordEncoder;
+	private final AuthenticationManager authenticationManager;
 
-    public TokensResponseDto authenticate(String email, String password) {
-        Optional<Customer> customerOptional = customerRepo.findByEmail(email);
-        Optional<Farmer> farmerOptional = farmerRepo.findByEmail(email);
+	public TokensResponseDto authenticate(String email, String password) {
 
-        if (customerOptional.isPresent()) {
-            Customer customer = customerOptional.get();
-            CustomerCredential credential = customer.getCredential();
+		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(email);
 
-            if (credential != null && passwordEncoder.matches(password, credential.getHashedPassword())) {
-                log.info("AuthService. Customer authenticated: {}", email);
+		Optional<Client> clientOptional = clientRepo.findByEmail(email);
 
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+//        if (clientOptional.isPresent()) {
+//        	Client client = clientOptional.get();
+//            if (passwordEncoder.matches(password, client.getPassword())) {
+//                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+//                String uuid = client.getId().toString();
+//                return jwtService.generateToken(uuid, email);
+//            }
+//        } else
+		if (farmerOptional.isPresent()) {
+			Farmer farmer = farmerOptional.get();
+			FarmerCredential credential = credentialRepo.findByFarmer(farmer);
+			log.info("Authenticate. Farmer " + farmer.getEmail() + " exists");
+			
+			log.info("Authenticate. passwordEncoder.matches" + passwordEncoder.matches(password, credential.getHashedPassword()));
+			if (passwordEncoder.matches(password, credential.getHashedPassword())) {
+				log.info("Authenticate. Password is valid");
+				String uuid = farmer.getId().toString();
+				String accessToken = jwtService.generateAccessToken(uuid, email);
+				String refreshToken = jwtService.generateRefreshToken(uuid, email);
+				credential.setRefreshToken(refreshToken);
+				credentialRepo.save(credential);
+				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
-                String uuid = customer.getId().toString();
-                String accessToken = jwtService.generateAccessToken(uuid, email);
-                String refreshToken = jwtService.generateRefreshToken(uuid, email);
+				return new TokensResponseDto(accessToken, refreshToken);
+			}
+		}
+		throw new BadCredentialsException(WRONG_USER_NAME_OR_PASSWORD);
+	}
 
-                credential.setRefreshToken(refreshToken);
-                customerCredentialRepo.save(credential);
-
-                return new TokensResponseDto(accessToken, refreshToken);
-            }
-        } 
-
-        if (farmerOptional.isPresent()) {
-            Farmer farmer = farmerOptional.get();
-            FarmerCredential credential = farmerCredentialRepo.findByFarmer(farmer);
-
-            if (credential != null && passwordEncoder.matches(password, credential.getHashedPassword())) {
-                log.debug("Authenticate. Farmer {} authenticated", farmer.getEmail());
-
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-
-                String uuid = farmer.getId().toString();
-                String accessToken = jwtService.generateAccessToken(uuid, email);
-                String refreshToken = jwtService.generateRefreshToken(uuid, email);
-
-                credential.setRefreshToken(refreshToken);
-                farmerCredentialRepo.save(credential);
-
-                return new TokensResponseDto(accessToken, refreshToken);
-            }
-        }
-
-        throw new BadCredentialsException(WRONG_USER_NAME_OR_PASSWORD);
-    }
-
-    public ResponseEntity<RefreshTokenResponseDto> refreshAccessToken(String refreshToken) {
-        log.info("AuthService. Refresh access token starts - {}", refreshToken);
-
-        UUID id = UUID.fromString(jwtService.extractUserId(refreshToken));
-
-        Optional<Farmer> farmerOptional = farmerRepo.findByid(id);
-        Optional<Customer> customerOptional = customerRepo.findById(id);
-
-        if (farmerOptional.isPresent()) {
-            Farmer farmer = farmerOptional.get();
-            FarmerCredential credential = farmerCredentialRepo.findByFarmer(farmer);
-
-            if (credential != null && refreshToken.equals(credential.getRefreshToken()) && !jwtService.isTokenExpired(refreshToken)) {
-                log.info("AuthService. Farmer refresh token is valid");
-                return ResponseEntity.ok(new RefreshTokenResponseDto(jwtService.generateAccessToken(id.toString(), farmer.getEmail())));
-            }
-        } 
-        
-        if (customerOptional.isPresent()) {
-            Customer customer = customerOptional.get();
-            CustomerCredential credential = customerCredentialRepo.findByCustomer(customer);
-
-            if (credential != null && refreshToken.equals(credential.getRefreshToken()) && !jwtService.isTokenExpired(refreshToken)) {
-                log.info("AuthService. Customer refresh token is valid");
-                return ResponseEntity.ok(new RefreshTokenResponseDto(jwtService.generateAccessToken(id.toString(), customer.getEmail())));
-            }
-        }
-
-        throw new RuntimeException("Invalid or expired refresh token");
-    }
+	public ResponseEntity<RefreshTokenResponseDto> refreshAccessToken(String refreshToken) {
+		
+		log.info("AuthService refreshAccessToken. Refresh access token starts - " + refreshToken );
+		
+		UUID id = UUID.fromString(jwtService.extractUserId(refreshToken));
+		Optional<Farmer> farmerOptional = farmerRepo.findByid(id);
+		FarmerCredential credential = credentialRepo.findByFarmer(new Farmer(id));
+		log.info("AuthService refreshAccessToken. Checking data from refreshToken : farmer exists - " + farmerOptional.isPresent());
+		log.info("AuthService refreshAccessToken. credential.getRefreshToken().equals(refreshToken) - " + credential.getRefreshToken().equals(refreshToken));
+		log.info("AuthService refreshAccessToken. isTokenExpired - " + jwtService.isTokenExpired(refreshToken) );
+		if (farmerOptional.isPresent() && !credential.getRefreshToken().isBlank() 
+				&& credential.getRefreshToken().equals(refreshToken) && !jwtService.isTokenExpired(refreshToken)) {
+			return ResponseEntity.ok(new RefreshTokenResponseDto(jwtService.generateAccessToken(id.toString(), farmerOptional.get().getEmail())));
+		} else {
+			throw new BadCredentialsException(INVALID_TOKEN);
+		}
+	}
 }
+
