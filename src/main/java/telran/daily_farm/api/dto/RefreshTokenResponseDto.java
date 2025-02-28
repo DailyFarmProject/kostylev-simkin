@@ -13,5 +13,5 @@ import lombok.Setter;
 public class RefreshTokenResponseDto {
 	@Schema(description = "refreshToken", example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5OTc3YzFjOS0yODU3LTQ4MDItYjQ0Ni0zZmMzYTEyNmFhNzgiLCJlbWFpbCI6IjVAbWFpbC5tYWlsIiwiaWF0Ijo"
 			+ "xNzM5NTYwMDY0LCJleHAiOjE3Mzk1NjAxODR9.4BWf9wrrvYJEnYEr4TA9JLE0YqlDfgLmiS0nwObTCOc")
-	String accsessToken;
+	String accessToken;//typo
 }
