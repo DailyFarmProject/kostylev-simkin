@@ -12,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
@@ -21,7 +20,7 @@ import static telran.daily_farm.api.ApiConstants.*;
 import java.io.IOException;
 import java.util.Date;
 
-@Component
+
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -29,9 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final UserDetailsService userDetailsService;
 	private final TokenBlacklistService blackListService;
 
-
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                log.info("OncePerRequestFilter. Received userDetails + role: " + userDetails.getAuthorities());
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws ServletException, IOException {
 
 		String requestURI = request.getRequestURI();
 		log.info("OncePerRequestFilter. requestURI" + requestURI);
@@ -41,6 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				|| requestURI.equals(RESET_PASSWORD)
 				|| requestURI.equals(FARMER_CHANGE_EMAIL)
 				|| requestURI.equals(FARMER_NEW_EMAIL_VERIFICATION)
+				|| requestURI.equals(FARMER_REGISTER)
 				|| requestURI.equals("/swagger-ui.html") 
 				|| requestURI.startsWith("/swagger") 
 				|| requestURI.startsWith("/v3")) {
@@ -85,17 +85,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				request.setAttribute("JWT_ERROR", e.getMessage());
 		        throw new JwtException(e.getMessage());
 
-
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                } else {
-                    throw new JwtException(INVALID_TOKEN);
-                }
-            } catch (ExpiredJwtException | SecurityException | MalformedJwtException e) {
-                throw new JwtException(INVALID_TOKEN);
-            }
-        }
-        chain.doFilter(request, response);
-    }
+			}
+		}
+		chain.doFilter(request, response);
+	}
 }

@@ -19,7 +19,8 @@ import static telran.daily_farm.api.ApiConstants.*;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter; 
+    //private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
     private final TokenBlacklistService blackListService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;

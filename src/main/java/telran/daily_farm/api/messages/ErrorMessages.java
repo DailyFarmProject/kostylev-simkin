@@ -8,8 +8,8 @@ public interface ErrorMessages {
 	String NOT_VALID_REGION = "The provided region is not valid.";
 	String NOT_VALID_STREET = "The provided street is not valid.";
 //
-//	String NAME_IS_NOT_VALID = "The provided name is not valid.";
-//	String LAST_NAME_IS_NOT_VALID = "The provided last last name is not valid.";
+	String NAME_IS_NOT_VALID = "The provided name is not valid.";
+	String LAST_NAME_IS_NOT_VALID = "The provided last last name is not valid.";
 //	String PAYPAL_CLIENT_ID_INVALID = "Invalid PayPal Client ID format.";
 //	String PAYPAL_SECRET_INVALID = "Invalid PayPal Secret format.";
 //	String PAYPAL_DETAILS_IS_REQUIRED = "PayPal field is requiared.";

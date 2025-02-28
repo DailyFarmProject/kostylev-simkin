@@ -5,10 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.daily_farm.api.dto.RefreshTokenResponseDto;
 import telran.daily_farm.api.dto.TokensResponseDto;
-import telran.daily_farm.customer.repo.CustomerRepository;
-import telran.daily_farm.customer.repo.CustomerCredentialRepository;
-import telran.daily_farm.entity.Customer;
-import telran.daily_farm.entity.CustomerCredential;
+
 import telran.daily_farm.entity.Farmer;
 import telran.daily_farm.entity.FarmerCredential;
 import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
@@ -29,7 +26,7 @@ import java.util.UUID;
 @Slf4j
 public class AuthService {
 	private final FarmerRepository farmerRepo;
-	private final ClientRepository clientRepo;
+	
 	private final FarmerCredentialRepository credentialRepo;
 	private final JwtService jwtService;
 	private final PasswordEncoder passwordEncoder;
@@ -39,7 +36,7 @@ public class AuthService {
 
 		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(email);
 
-		Optional<Client> clientOptional = clientRepo.findByEmail(email);
+		
 
 //        if (clientOptional.isPresent()) {
 //        	Client client = clientOptional.get();
