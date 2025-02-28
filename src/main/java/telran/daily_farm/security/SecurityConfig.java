@@ -14,7 +14,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import static telran.daily_farm.api.ApiConstants.*;
+
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,8 +43,8 @@ public class SecurityConfig {
                         .requestMatchers("/farmer/**").hasRole("FARMER")
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(jwtAuthEntryPoint) )
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint) )
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService,blackListService), UsernamePasswordAuthenticationFilter.class)
 
                 .build();
@@ -56,6 +62,17 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+       CorsConfiguration configuration = new CorsConfiguration();
+       configuration.setAllowedOrigins(List.of("*")); 
+       configuration.setAllowedMethods(List.of("*"));
+       configuration.setAllowedHeaders(List.of("*")); 
+       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+       source.registerCorsConfiguration("/**", configuration);
+       return source;
+   }
     
   
 }
