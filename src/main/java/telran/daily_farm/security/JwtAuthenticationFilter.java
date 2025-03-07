@@ -41,6 +41,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				|| requestURI.equals(FARMER_CHANGE_EMAIL)
 				|| requestURI.equals(FARMER_NEW_EMAIL_VERIFICATION)
 				|| requestURI.equals(FARMER_REGISTER)
+				|| requestURI.equals(GET_ALL_SETS)
+				|| requestURI.equals(GET_LANGUAGES)
 				|| requestURI.equals("/swagger-ui.html") 
 				|| requestURI.startsWith("/swagger") 
 				|| requestURI.startsWith("/v3")) {

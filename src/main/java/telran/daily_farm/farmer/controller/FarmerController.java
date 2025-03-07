@@ -38,7 +38,7 @@ import telran.daily_farm.security.JwtService;
 import telran.daily_farm.security.UserDetailsWithId;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
-
+import static telran.daily_farm.api.messages.SuccessMessages.*;
 
 import static telran.daily_farm.api.ApiConstants.*;
 
@@ -54,6 +54,7 @@ public class FarmerController {
 	@Autowired
 	private AuthService authService;
 
+
 	@Operation(summary = "Registration of new Farmer",
 				description = "Registration of new Farmer", 
 				requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -62,7 +63,9 @@ public class FarmerController {
 	@PostMapping(FARMER_REGISTER)
 	public ResponseEntity<String> registerFarmer(@Valid @RequestBody FarmerRegistrationDto farmerDto,
 			@RequestHeader(value = "X-Latitude", required = false) Double latitude,
-			@RequestHeader(value = "X-Longitude", required = false) Double longitude) {
+			@RequestHeader(value = "X-Longitude", required = false) Double longitude,
+			@RequestHeader(value = "Accept-Language", defaultValue = "en") String brouserLanguage,
+			@RequestHeader(value = "X-User-Language", required = false) String userLanguage) {
 
 		log.info("Controller. Request for registration new farmer - " + farmerDto.getEmail());
 		if (latitude == null && longitude == null && farmerDto.getCoordinates() == null)
@@ -72,7 +75,15 @@ public class FarmerController {
 			farmerDto.setCoordinates(new CoordinatesDto(latitude, longitude));
 			log.debug("Controller. There is not coordinates in body. Update coordinates in dto from header");
 		}
-		return farmerService.registerFarmer(farmerDto);
+		
+		
+		String language;
+		if(userLanguage == null)
+			language = brouserLanguage != null ? brouserLanguage.split(",")[0] : "en";
+		else
+			language = userLanguage;
+			
+		return farmerService.registerFarmer(farmerDto, language);
 	}
 	
 	@Operation(summary = "Email verification", 
@@ -122,7 +133,7 @@ public class FarmerController {
 	public ResponseEntity<String> logoutFarmer(	@AuthenticationPrincipal UserDetailsWithId user,
 			@Parameter(description = "JWT токен", required = true) @RequestHeader("Authorization") String token) {
 		farmerService.logoutFarmer(user.getId(), token);
-		return ResponseEntity.ok("Logged out successfully");
+		return ResponseEntity.ok(LOGOUT_SUCCESS);
 	}
 
 	@Operation(summary = "Login of Farmer",

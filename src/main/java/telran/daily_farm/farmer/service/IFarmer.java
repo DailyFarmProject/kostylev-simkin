@@ -13,7 +13,7 @@ import telran.daily_farm.api.dto.TokensResponseDto;
 
 public interface IFarmer {
 
-	ResponseEntity<String> registerFarmer(FarmerRegistrationDto farmerDto);
+	ResponseEntity<String> registerFarmer(FarmerRegistrationDto farmerDto, String lang);
 
 	ResponseEntity<String> emailVerification(String verificationToken);
 
