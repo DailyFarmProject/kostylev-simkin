@@ -1,5 +1,6 @@
 package telran.daily_farm.api.messages;
 
+
 public interface ErrorMessages {
 
 	// not in use
@@ -62,4 +63,10 @@ public interface ErrorMessages {
 	String ADDRESS_VALIDATION_FAILED = "Address validation failed: low relevance or incorrect place type";
 	String COULD_NOT_RETRIVE_COORDINATES = "Could not retrieve coordinates";
 	String WRONG_COORDINATES = "No location or places were found for the given input";
+	
+	
+	
+	String SIZE_IS_NOT_AVAILABLE = "Entered size is not available";
+	String CATEGORY_IS_NOT_AVAILABLE = "Entered Category is not available";
+	
 }

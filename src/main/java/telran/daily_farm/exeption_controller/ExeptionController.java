@@ -15,22 +15,22 @@ import org.springframework.web.server.ResponseStatusException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import telran.daily_farm.api.dto.ApiResponse;
 
 @ControllerAdvice
 @Slf4j
 public class ExeptionController {
 	
-//	@ExceptionHandler(JwtException.class)
-//	public ResponseEntity<String> handleJwtException(JwtException ex) {
-//		
-//		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
-//	}
-//	
-
+	@ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<String>> handleIllegalArgument(IllegalArgumentException ex) {
+        ApiResponse<String> response = ApiResponse.error(ex.getMessage(), 404);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+	
+	
 	@ExceptionHandler(JwtException.class)
 	  public ResponseEntity<String> handleJwtException(HttpServletRequest request) {
 	        String message = (String) request.getAttribute("JWT_ERROR");
-	        log.error("@ExceptionHandler "  + message);
 	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(message != null ? message : "Invalid token");
 	    }
 	

@@ -1,6 +1,7 @@
 package telran.daily_farm.email_sender.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -21,13 +22,16 @@ public class MailSenderService implements IMailSender {
     @Autowired
 	JavaMailSender sender;
 
-    
+    @Value("${daily.farm.domain}")
+    private String domain;
+//    http://localhost:8080
+//    https://daily-farm-latest.onrender.com
 
     
     
 	@Override
 	public ResponseEntity<String> sendEmailVerification(String email, String verificationToken) {
-		String link = "http://localhost:8080"+FARMER_EMAIL_VERIFICATION+"?token="+ verificationToken;
+		String link = domain+FARMER_EMAIL_VERIFICATION+"?token="+ verificationToken;
 		System.out.println("generated link - " + link);
 		 String htmlContent =  
 				 "<!DOCTYPE html>" +
@@ -91,16 +95,16 @@ public class MailSenderService implements IMailSender {
 				           
 				            "</body></html>";
 
-		sendEmail(email, "Email verification", htmlContent);
+		sendEmail(email, "Reset password", htmlContent);
 		
-		return ResponseEntity.ok("Check your email for verification");
+		return ResponseEntity.ok("Check your email for new password");
 		
 	}
 
 
 
 	public ResponseEntity<String> sendChangeEmailVerification(String email, String verificationTokenForUpdateEmail) {
-		String link = "http://localhost:8080"+FARMER_NEW_EMAIL_VERIFICATION+"?token="+ verificationTokenForUpdateEmail;
+		String link = domain + FARMER_NEW_EMAIL_VERIFICATION+"?token="+ verificationTokenForUpdateEmail;
 		System.out.println("generated link - " + link);
 		 String htmlContent =  
 				 "<!DOCTYPE html>" +
@@ -127,7 +131,7 @@ public class MailSenderService implements IMailSender {
 
 
 	public ResponseEntity<String> sendVerificationTokenToNewEmail(String newEmailFromToken, String token) {
-		String link = "http://localhost:8080" + FARMER_CHANGE_EMAIL + "?token="+ token;
+		String link = domain + FARMER_CHANGE_EMAIL + "?token="+ token;
 		System.out.println("generated link - " + link);
 		 String htmlContent =  
 				 "<!DOCTYPE html>" +

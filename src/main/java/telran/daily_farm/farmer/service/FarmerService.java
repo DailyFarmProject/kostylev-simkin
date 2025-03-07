@@ -1,6 +1,7 @@
 package telran.daily_farm.farmer.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.daily_farm.api.dto.*;
 import telran.daily_farm.email_sender.service.MailSenderService;
+import telran.daily_farm.email_sender.service.SendGridEmailSender;
 import telran.daily_farm.entity.*;
 import telran.daily_farm.farmer.repo.CoordinatesRepository;
 import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
@@ -21,6 +23,7 @@ import telran.daily_farm.location.service.ILocationService;
 import telran.daily_farm.security.AuthService;
 import telran.daily_farm.security.JwtService;
 import telran.daily_farm.security.TokenBlacklistService;
+import telran.daily_farm.translate_service.LibreTranslateLocalService;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
 
@@ -36,12 +39,15 @@ public class FarmerService implements IFarmer {
 	private final FarmerRepository farmerRepo;
 	private final FarmerCredentialRepository credentialRepo;
 	private final CoordinatesRepository coordinatesRepo;
-	
+	private final LibreTranslateLocalService libreTranslate;
 	//private final AddressRepository addressRepo;
 	private final TokenBlacklistService blackListService;
+
+	private final StringRedisTemplate redisTemplate;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthService authService;
 	private final MailSenderService emailService;
+	private final SendGridEmailSender gridSender;
 	private final JwtService jwtService;
 
 	@Autowired
@@ -49,7 +55,7 @@ public class FarmerService implements IFarmer {
 
 	@Override
 	@Transactional
-	public ResponseEntity<String> registerFarmer(FarmerRegistrationDto farmerDto) {
+	public ResponseEntity<String> registerFarmer(FarmerRegistrationDto farmerDto , String lang) {
 		log.info("Servise. Registration of new farmer - " + farmerDto.getEmail());
 		String email = farmerDto.getEmail();
 		checkEmailIsUnique(email);
@@ -64,6 +70,8 @@ public class FarmerService implements IFarmer {
 		farmerRepo.save(farmer);
 		log.info("Servise. Farmer saved to database");
 		farmerRepo.flush();
+		
+		redisTemplate.opsForValue().set("user:language:" + farmer.getId(), lang);
 
 		FarmerCredential credential = FarmerCredential.builder().createdAt(LocalDateTime.now())
 				.password_last_updated(LocalDateTime.now())
@@ -84,7 +92,7 @@ public class FarmerService implements IFarmer {
 //		addressRepo.save(address);
 		log.info("Service. Address added successfully");
 
-		emailService.sendEmailVerification(email,
+		gridSender.sendEmailVerification(email,
 				jwtService.generateVerificationToken(farmer.getId().toString(), email));
 
 		return ResponseEntity.ok("Farmer added successfully. You need to verify your email");
@@ -116,7 +124,7 @@ public class FarmerService implements IFarmer {
 		
 		if(!credentialRepo.findByFarmer(farmer).isVerificated()) {
 			log.debug("Service. Login. Email is not verificated. Send link to email -" + email);
-			emailService.sendEmailVerification(email,
+			gridSender.sendEmailVerification(email,
 					jwtService.generateVerificationToken(farmer.getId().toString(), email));
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, EMAIL_IS_NOT_VERIFICATED);
 		}
@@ -185,7 +193,7 @@ public class FarmerService implements IFarmer {
 		
 		Farmer farmer = farmerRepo.findByid(id).get();
 		String email = farmer.getEmail();
-		emailService.sendChangeEmailVerification(email, jwtService.generateVerificationTokenForUpdateEmail(farmer.getId().toString(),email, newEmail));
+		gridSender.sendChangeEmailVerification(email, jwtService.generateVerificationTokenForUpdateEmail(farmer.getId().toString(),email, newEmail));
 		return ResponseEntity.ok(CHECK_EMAIL_FOR_VERIFICATION_LINK + " - " + email);
 	}
 	
@@ -199,7 +207,7 @@ public class FarmerService implements IFarmer {
 				 && !blackListService.isBlacklisted(verificationToken)) {
 			String id = jwtService.extractUserId(verificationToken);
 			String newToken = jwtService.generateVerificationTokenForUpdateEmail(id, oldEmailFromToken, newEmailFromToken);
-			emailService.sendVerificationTokenToNewEmail(newEmailFromToken, newToken);
+			gridSender.sendVerificationTokenToNewEmail(newEmailFromToken, newToken);
 			blackListService.addToBlacklist(verificationToken);
 		}else
 			throw new JwtException(INVALID_TOKEN);
@@ -243,7 +251,7 @@ public class FarmerService implements IFarmer {
 	@Transactional
 	public ResponseEntity<String> updatePhone(UUID id, String newPhone) {
 		farmerRepo.findByid(id).get().setPhone(newPhone);
-		return ResponseEntity.ok("Phone updated successfully");
+		return ResponseEntity.ok(libreTranslate.translate("","","Phone updated successfully"));
 
 	}
 
@@ -318,7 +326,7 @@ public class FarmerService implements IFarmer {
 		log.info("Service. Password hashed and saved to credential");
 		credential.setPassword_last_updated(LocalDateTime.now());
 		
-		emailService.sendResetPassword(email, genPassword);
+		gridSender.sendResetPassword(email, genPassword);
 		log.info("Service. Password was send to email ");
 		
 	return ResponseEntity.ok(CHECK_EMAIL_FOR_VERIFICATION_LINK);

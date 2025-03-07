@@ -1,5 +1,7 @@
 package telran.daily_farm.entity;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -9,6 +11,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -19,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import telran.daily_farm.api.dto.FarmerRegistrationDto;
+import telran.daily_farm.entity.farm_set.FarmSet;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -52,6 +56,10 @@ public class Farmer {
 
 	@OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL)
 	FarmerCredential credential;
+	
+	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
+	List<FarmSet> farmSets;;
+
 
 //	@Embedded
 //	PayPalConfigDto paypalDetails;

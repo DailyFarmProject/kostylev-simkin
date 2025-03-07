@@ -39,7 +39,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(FARMER_REGISTER, FARMER_LOGIN, FARMER_REFRESH_TOKEN, FARMER_EMAIL_VERIFICATION,
-                        		FARMER_EMAIL_VERIFICATION_RESEND, RESET_PASSWORD, FARMER_CHANGE_EMAIL, FARMER_NEW_EMAIL_VERIFICATION, "/swagger-ui/**", "/v3/**").permitAll()
+                        		FARMER_EMAIL_VERIFICATION_RESEND, RESET_PASSWORD, FARMER_CHANGE_EMAIL,
+                        		FARMER_NEW_EMAIL_VERIFICATION,GET_ALL_SETS,GET_LANGUAGES, "/swagger-ui/**", "/v3/**").permitAll()
                         .requestMatchers("/farmer/**").hasRole("FARMER")
                         .anyRequest().authenticated()
                 )
