@@ -78,7 +78,7 @@ public class FarmerController {
 		
 		
 		String language;
-		if(userLanguage == null)
+		if(userLanguage == null || userLanguage.isBlank())
 			language = brouserLanguage != null ? brouserLanguage.split(",")[0] : "en";
 		else
 			language = userLanguage;

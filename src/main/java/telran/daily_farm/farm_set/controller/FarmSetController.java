@@ -15,12 +15,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.ApiResponse;
 import telran.daily_farm.api.dto.farm_set.FarmSetDto;
 import telran.daily_farm.api.dto.farm_set.FarmSetResponseDto;
-import telran.daily_farm.api.dto.farm_set.GetAllLanguagesResponse;
-import telran.daily_farm.api.dto.farm_set.GetFarmSetCategoryResponse;
-import telran.daily_farm.api.dto.farm_set.GetFarmSetSizesResponse;
 import telran.daily_farm.farm_set.service.FarmSetService;
 import telran.daily_farm.security.UserDetailsWithId;
 
@@ -35,30 +31,16 @@ public class FarmSetController {
 
 	@PostMapping(ADD_FARM_SET)
 	@PreAuthorize("hasRole(ROLE_FARMER)")
-	public ResponseEntity<ApiResponse<String>> addFarmSet(@Valid @RequestBody FarmSetDto farmSetDto,
+	public ResponseEntity<Void> addFarmSet(@Valid @RequestBody FarmSetDto farmSetDto,
 			@AuthenticationPrincipal UserDetailsWithId user,
 			@Parameter(description = "JWT токен", required = true) @RequestHeader("Authorization") String token) {
 		return farmSetService.addFarmSet(user.getId(), farmSetDto);
 	}
 
-	@GetMapping(GET_CATEGORIES)
-	@PreAuthorize("hasRole(ROLE_FARMER)")
-	public ResponseEntity<ApiResponse<GetFarmSetCategoryResponse>> getFarmSetCategories(
-			@AuthenticationPrincipal UserDetailsWithId user,
-			@Parameter(description = "JWT токен", required = true) @RequestHeader("Authorization") String token) {
-		return farmSetService.getFarmSetCategories();
-	}
-
-	@GetMapping(GET_SIZES)
-	@PreAuthorize("hasRole(ROLE_FARMER)")
-	public ResponseEntity<ApiResponse<GetFarmSetSizesResponse>> getFarmSetSizes(@AuthenticationPrincipal UserDetailsWithId user,
-			@Parameter(description = "JWT токен", required = true) @RequestHeader("Authorization") String token) {
-		return farmSetService.getFarmSetSizes();
-	}
 
 	@GetMapping(GET_ALL_SETS_BY_FARMER)
 	@PreAuthorize("hasRole(ROLE_FARMER)")
-	public ResponseEntity<ApiResponse<List<FarmSetResponseDto>>> getAbailableFarmSetsForFarmer(
+	public ResponseEntity<List<FarmSetResponseDto>> getAbailableFarmSetsForFarmer(
 			@AuthenticationPrincipal UserDetailsWithId user,
 			@Parameter(description = "JWT токен", required = true) @RequestHeader("Authorization") String token) {
 		return farmSetService.getAbailableFarmSetsForFarmer(user.getId());
@@ -66,12 +48,9 @@ public class FarmSetController {
 
 	
 	@GetMapping(GET_ALL_SETS)
-	public ResponseEntity<ApiResponse<List<FarmSetResponseDto>>> getAllFarmSets() {
+	public ResponseEntity<List<FarmSetResponseDto>> getAllFarmSets() {
 		return farmSetService.getAllFarmSets();
 	}
 	
-	@GetMapping(GET_LANGUAGES)
-	public  ResponseEntity<ApiResponse<GetAllLanguagesResponse>> getAllLanguages(){
-		return farmSetService.getAllLanguages();
-	}
+
 }

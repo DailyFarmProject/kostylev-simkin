@@ -38,10 +38,10 @@ public interface ApiConstants {
 
 	// FARM_SETS
 	
-	List<String> LIST_OF_CATEGORIES = List.of("Vegetables", "Fruits", "Dairy", "Meat", "Fish",
-									"Eggs", "Bee products", "Bakery", "Homemade_preservs","Herbs", "Mixed","Other");
+	List<String> LIST_OF_CATEGORIES = List.of("vegetables", "fruits", "dairy", "meat", "fish",
+									"eggs", "bee products", "bakery", "homemade preservs","herbs", "mixed","other");
 	
-	List<String> SIZE_LIST = List.of("SMALL 1-2kg", "MEDIUM 4-5kg", "LARGE 8-10 kg");
+	List<String> SIZE_LIST = List.of("small 1-2 kg", "medium 4-5 kg", "large 8-10 kg");
 	
 	String ADD_FARM_SET = "farmer/farm-set";
 	String GET_ALL_SETS_BY_SIZE = "/farm-sets/size";
@@ -52,6 +52,8 @@ public interface ApiConstants {
 	String GET_CATEGORIES = "/categories";
 	String GET_SIZES = "/sizes";
 	String GET_LANGUAGES = "/languages";
+	
+	String CHANGE_USER_LANGUAGE = "/lang";
 
 
 }

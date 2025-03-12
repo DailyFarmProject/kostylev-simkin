@@ -1,7 +1,6 @@
 package telran.daily_farm.entity;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -48,6 +47,9 @@ public class Farmer {
 
 	@Column(nullable = false)
 	String phone;
+	
+	@Column(nullable = false)
+	String farmerLanguage;
 
 	Double balance;
 

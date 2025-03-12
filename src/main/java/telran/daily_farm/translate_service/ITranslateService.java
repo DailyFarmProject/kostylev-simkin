@@ -7,5 +7,7 @@ public interface ITranslateService {
 	Map<String, String> getAllLanguages();
 	
 	String translate(String fromLang, String toLang, String text);
+	
+	<T>T translateDto(T dto, String targetLang);
 
 }
