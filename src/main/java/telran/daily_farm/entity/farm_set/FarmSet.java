@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -19,8 +20,6 @@ import lombok.Setter;
 import telran.daily_farm.api.dto.farm_set.FarmSetResponseDto;
 import telran.daily_farm.entity.Farmer;
 
-
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -34,46 +33,42 @@ public class FarmSet {
 	@GeneratedValue
 	@UuidGenerator
 	UUID id;
-	
+
+	@Column(nullable = false)
 	String description;
-	
-	double price;
-	
+
+	@Column(nullable = false)
+	private double price;
+
+	@Column(nullable = false)
 	int availibleCount;
 	
-	boolean abailible;
+//	@Column(nullable = false)
+//	boolean abailible;
 	
+	@Column(nullable = false)
 	LocalDateTime pickupTimeStart;
 	
+	@Column(nullable = false)
 	LocalDateTime pickupTimeEnd;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "farmer_id", nullable = false)
 	Farmer farmer;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "size_id", nullable = false)
-	
 	FarmSetSize size;
-	
-	
-	
+
 	@ManyToOne
 	@JoinColumn(name = "category_id", nullable = false)
-	FarmSetCategory  category;
-	
-	
+	FarmSetCategory category;
+
 	public static FarmSetResponseDto buildFromEntity(FarmSet fs) {
-		 return FarmSetResponseDto.builder()
-				 .category(fs.category.category)
-				 .size(fs.size.size)
-				 .id(fs.id)
-				 .availibleCount(fs.availibleCount)
-				 .description(fs.description)
-				 .price(fs.price)
-				 .pickupTimeStart(fs.pickupTimeStart)
-				 .pickupTimeEnd(fs.pickupTimeEnd)
-				 
-				 .build();
-	 }
+		return FarmSetResponseDto.builder().category(fs.category.category).size(fs.size.size).id(fs.id)
+				.availibleCount(fs.availibleCount).description(fs.description).price(fs.price)
+				.pickupTimeStart(fs.pickupTimeStart).pickupTimeEnd(fs.pickupTimeEnd)
+
+				.build();
+	}
 }

@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 import telran.daily_farm.api.dto.FarmerRegistrationDto;
 import telran.daily_farm.entity.farm_set.FarmSet;
+import telran.daily_farm.entity.order.OrderFarmSet;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -61,6 +62,9 @@ public class Farmer {
 	
 	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
 	List<FarmSet> farmSets;;
+	
+	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
+	List<OrderFarmSet> orders;;
 
 
 //	@Embedded

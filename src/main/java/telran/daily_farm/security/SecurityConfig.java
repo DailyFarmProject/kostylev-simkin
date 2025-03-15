@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(FARMER_REGISTER, FARMER_LOGIN, FARMER_REFRESH_TOKEN, FARMER_EMAIL_VERIFICATION,
                         		FARMER_EMAIL_VERIFICATION_RESEND, RESET_PASSWORD, FARMER_CHANGE_EMAIL,
-                        		FARMER_NEW_EMAIL_VERIFICATION,GET_ALL_SETS, "/swagger-ui/**", "/v3/**").permitAll()
+                        		FARMER_NEW_EMAIL_VERIFICATION,GET_ALL_SETS, CREATE_ORDER, CUSTOMER_LOGIN, CUSTOMER_REGISTER, "/swagger-ui/**", "/v3/**").permitAll()
                         .requestMatchers("/farmer/**").hasRole("FARMER")
                         .anyRequest().authenticated()
                 )
