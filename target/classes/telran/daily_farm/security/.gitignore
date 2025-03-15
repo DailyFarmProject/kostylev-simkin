@@ -1,6 +1,8 @@
-/UserDetailsWithId.class
+/TokenBlacklistService.class
 /UserDetailsServiceImpl.class
-/JwtAuthenticationFilter.class
-/JwtService.class
+/UserDetailsWithId.class
 /SecurityConfig.class
 /AuthService.class
+/JwtAuthEntryPoint.class
+/JwtAuthenticationFilter.class
+/JwtService.class

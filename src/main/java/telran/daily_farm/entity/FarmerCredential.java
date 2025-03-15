@@ -26,11 +26,11 @@ import lombok.Setter;
 public class FarmerCredential {
     @Id
     @GeneratedValue
-    UUID id;
+    UUID id;//why not private?
 
     @OneToOne
     @JoinColumn(name = "farmer_id", nullable = false)
-    Farmer farmer;
+    Farmer farmer;//why not private?
 
     @Column(nullable = false)
     private String hashedPassword;

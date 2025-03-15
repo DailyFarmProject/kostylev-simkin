@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface IMailSender {
 
-	ResponseEntity<String> sendEmailVerification(String email, String verificationToken);
+	ResponseEntity<String> sendEmailVerification(String email, String verificationToken, boolean isFarmer);
 
 	ResponseEntity<String> sendChangeEmailVerification(String email, String verificationTokenForUpdateEmail);
 
