@@ -41,6 +41,9 @@ public class CustomerCredential {
     @Column(nullable = false)
     private LocalDateTime createdAt;
     
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isVerificated;
+    
     @Column(nullable = false)
     private LocalDateTime passwordLastUpdated;
     

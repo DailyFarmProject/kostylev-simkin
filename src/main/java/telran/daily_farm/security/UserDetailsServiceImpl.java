@@ -27,14 +27,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
-	private final CustomerRepository clientRepo;
+	private final CustomerRepository customerRepo;
 	private final FarmerRepository farmerRepo;
 	private final CustomerCredentialRepository customerCredentialRepo;
-	private final FarmerCredentialRepository credentialRepo;
+	private final FarmerCredentialRepository farmerCredentialRepo;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<Customer> customerOptional = clientRepo.findByEmail(username);
+		Optional<Customer> customerOptional = customerRepo.findByEmail(username);
 		if (customerOptional.isPresent()) {
 			Customer customer = customerOptional.get();
 			CustomerCredential customerCredential = customerCredentialRepo.findByCustomer(customer);
@@ -45,7 +45,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(username);
 		if (farmerOptional.isPresent()) {
 			Farmer farmer = farmerOptional.get();
-			FarmerCredential credential = credentialRepo.findByFarmer(farmer);
+			FarmerCredential credential = farmerCredentialRepo.findByFarmer(farmer);
 			return new UserDetailsWithId(farmer.getEmail(), credential.getHashedPassword(),
 					List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
 		}

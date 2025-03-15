@@ -37,6 +37,9 @@ public interface ErrorMessages {
 
 	String FARMER_WITH_THIS_EMAIL_EXISTS = "Farmer with this email exists";
 	String FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS = "Farmer with this email is not exists";
+	
+	String CUSTOMER_WITH_THIS_EMAIL_EXISTS = "Customer with this email exists";
+	String CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS = "Customer with this email is not exists";
 
   String EMAIL_IS_VERIFICATED = "Email is verificated. Please login with user name and password";
 	String EMAIL_IS_NOT_VERIFICATED = "Email is not verificated. Please verify your email before logging in. Check your email for link";

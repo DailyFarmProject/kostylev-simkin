@@ -1,9 +1,3 @@
-/Address$AddressBuilder.class
-/Address.class
-/Farmer$FarmerBuilder.class
-/Farmer.class
-/FarmerCredential$FarmerCredentialBuilder.class
-/FarmerCredential.class
 /PayPalConfig.class
 /Coordinates$CoordinatesBuilder.class
 /Coordinates.class
@@ -11,3 +5,9 @@
 /Customer.class
 /CustomerCredential$CustomerCredentialBuilder.class
 /CustomerCredential.class
+/Farmer$FarmerBuilder.class
+/Farmer.class
+/FarmerCredential$FarmerCredentialBuilder.class
+/FarmerCredential.class
+/Address$AddressBuilder.class
+/Address.class

@@ -20,7 +20,7 @@ import telran.daily_farm.security.UserDetailsWithId;
 
 import static telran.daily_farm.api.ApiConstants.*;
 
-@Tag(name = "Client API", description = "Methods for clients")
+@Tag(name = "Customer API", description = "Methods for customers")
 @RestController
 @Slf4j
 public class CustomerController {
@@ -31,42 +31,45 @@ public class CustomerController {
     JwtService jwtService;
     @Autowired
     private AuthService authService;
+    
+  //Registration and verification
 
     @Operation(summary = "Registration of new customer", description = "Register a new customer")
     @PostMapping(CUSTOMER_REGISTER)
-    public ResponseEntity<String> registerClient(@Valid @RequestBody CustomerRegistrationDto customerDto) {
+    public ResponseEntity<String> registerCustomer(@Valid @RequestBody CustomerRegistrationDto customerDto) {
         log.info("Registering new customer: " + customerDto.getEmail());
         return customerService.registerCustomer(customerDto);
     }
+    
+    @Operation(summary = "Email verification", description = "Verify customer email with a token")
+    @GetMapping(CUSTOMER_EMAIL_VERIFICATION)
+    public ResponseEntity<String> emailVerification(@RequestParam String token) {
+        return customerService.emailVerification(token);
+    }
+    
+    @Operation(summary = "Resend verification link", description = "Resend email verification link")
+    @GetMapping(CUSTOMER_EMAIL_VERIFICATION_RESEND)
+    public ResponseEntity<String> resendVerificationLink(@Valid @RequestBody SendToRequestDto sendToRequestDto) {
+        return customerService.resendVerificationLink(sendToRequestDto.getEmail());
+    }
+    
+    //Authorization and logout
 
     @Operation(summary = "Login of customer", description = "Customer login, returns accessToken and refreshToken")
     @PostMapping(CUSTOMER_LOGIN)
     public ResponseEntity<TokensResponseDto> login(@RequestBody LoginRequestDto loginRequestDto) {
         return customerService.loginCustomer(loginRequestDto);
     }
-
-    @Operation(summary = "Refresh token", description = "Refresh access token using refreshToken")
-    @GetMapping(CUSTOMER_REFRESH_TOKEN)
-    public ResponseEntity<RefreshTokenResponseDto> refresh(@RequestBody RefreshTokenRequestDto request) {
-        log.info("Refreshing customer token");
-        return authService.refreshAccessToken(request.getRefreshToken());
+    
+    @Operation(summary = "Logout customer", description = "Logout and blacklist access token")
+    @DeleteMapping(CUSTOMER_LOGOUT)
+    public ResponseEntity<String> logoutCustomer(@AuthenticationPrincipal UserDetailsWithId user,
+                                                  @RequestHeader("Authorization") String token) {
+        return customerService.logoutCustomer(user.getId(), token);
     }
-
-    @Operation(summary = "Update customer data", description = "Update customer details")
-    @PutMapping(CUSTOMER_EDIT)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
-    public ResponseEntity<TokensResponseDto> updateCustomer(@Valid @RequestBody CustomerUpdateDataRequestDto customerDto,
-            @AuthenticationPrincipal UserDetailsWithId user) {
-        return customerService.updateCustomer(user.getId(), customerDto);
-    }
-
-    @Operation(summary = "Remove customer", description = "Delete customer account")
-    @DeleteMapping(CUSTOMER_REMOVE)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
-    public ResponseEntity<String> removeCustomer(@AuthenticationPrincipal UserDetailsWithId user) {
-        return customerService.removeCustomer(user.getId());
-    }
-
+    
+  //Changing and restoring the password
+    
     @Operation(summary = "Update customer password", description = "Change customer password, returns new tokens")
     @PutMapping(CUSTOMER_CHANGE_PASSWORD)
     @PreAuthorize("hasRole(ROLE_CUSTOMER)")
@@ -75,15 +78,23 @@ public class CustomerController {
             @AuthenticationPrincipal UserDetailsWithId user) {
         return customerService.updatePassword(user.getId(), changePasswordDto);
     }
-
-    @Operation(summary = "Update customer email", description = "Change customer email, returns new tokens")
-    @PutMapping(CUSTOMER_CHANGE_EMAIL)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
-    public ResponseEntity<TokensResponseDto> customerUpdateEmail(@Valid @RequestBody String newEmail,
-            @AuthenticationPrincipal UserDetailsWithId user) {
-        return customerService.updateEmail(user.getId(), newEmail);
+    
+    @Operation(summary = "Reset password", description = "Generate and send a new password to the customer's email")
+    @GetMapping(CUSTOMER_RESET_PASSWORD)
+    public ResponseEntity<String> generateAndSendNewPassword(@Valid @RequestBody SendToRequestDto sendToRequestDto) {
+        return customerService.generateAndSendNewPassword(sendToRequestDto.getEmail());
     }
-
+    
+    //Updating the customer's data
+    
+    @Operation(summary = "Update customer data", description = "Update customer details")
+    @PutMapping(CUSTOMER_EDIT)
+    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    public ResponseEntity<String> updateCustomer(@Valid @RequestBody CustomerUpdateDataRequestDto customerDto,
+            @AuthenticationPrincipal UserDetailsWithId user) {
+        return customerService.updateCustomer(user.getId(), customerDto);
+    }
+   
     @Operation(summary = "Update customer phone number", description = "Change customer phone number")
     @PutMapping(CUSTOMER_CHANGE_PHONE)
     @PreAuthorize("hasRole(ROLE_CUSTOMER)")
@@ -99,4 +110,50 @@ public class CustomerController {
             @AuthenticationPrincipal UserDetailsWithId user) {
         return customerService.changeName(user.getId(), fullname);
     }
+    
+    //Deleting an account
+    
+    @Operation(summary = "Remove customer", description = "Delete customer account")
+    @DeleteMapping(CUSTOMER_REMOVE)
+    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    public ResponseEntity<String> removeCustomer(@AuthenticationPrincipal UserDetailsWithId user) {
+        return customerService.removeCustomer(user.getId());
+    }
+    
+  //Email Update
+
+
+    @Operation(summary = "Update customer email", description = "Change customer email, requires email verification")
+    @PutMapping(CUSTOMER_CHANGE_EMAIL)
+    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    public ResponseEntity<String> customerUpdateEmail(@RequestParam String token) {
+        return customerService.updateEmail(token);
+    }
+    
+    @Operation(summary = "Send verification token for updating email", 
+            description = "Sends a verification token to confirm updating the customer's email address")
+ @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+ @GetMapping(CUSTOMER_EMAIL_CHANGE_VERIFICATION)
+ public ResponseEntity<String> sendVerificationTokenForUpdateEmail(
+         @RequestParam String newEmail,
+         @AuthenticationPrincipal UserDetailsWithId user) {
+     return customerService.sendVerificationTokenForUpdateEmail(user.getId(), newEmail);
+ }
+
+ @Operation(summary = "Send verification token to new email", 
+            description = "Sends a verification token to the new email address after initial verification")
+ @GetMapping(CUSTOMER_NEW_EMAIL_VERIFICATION)
+ public ResponseEntity<String> sendVerificationTokenToNewEmail(@RequestParam String token) {
+     return customerService.sendVerificationTokenToNewEmail(token);
+ }
+
+// Other
+ @Operation(summary = "Refresh token",
+	        description = "When accessToken expires, any request throws an exception. You need to refresh the token by sending refreshToken to this endpoint. Returns new accessToken")
+	@PostMapping(CUSTOMER_REFRESH_TOKEN)
+	public ResponseEntity<RefreshTokenResponseDto> refresh(
+	        @Parameter(description = "JWT refresh token", required = true) @RequestBody RefreshTokenRequestDto request) {
+	    log.info("Controller: Refresh token starts");
+	    return authService.refreshAccessToken(request.getRefreshToken());
+	}
 }

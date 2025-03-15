@@ -3,10 +3,12 @@ package telran.daily_farm.email_sender.service;
 import static telran.daily_farm.api.ApiConstants.FARMER_CHANGE_EMAIL;
 import static telran.daily_farm.api.ApiConstants.FARMER_EMAIL_VERIFICATION;
 import static telran.daily_farm.api.ApiConstants.FARMER_NEW_EMAIL_VERIFICATION;
+import static telran.daily_farm.api.ApiConstants.CUSTOMER_EMAIL_VERIFICATION;
 
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +20,8 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 
-
-@Service
+@Primary
+@Service("SendGridEmailSender")
 public class SendGridEmailSender implements IMailSender {
 
 	@Value("${sendgrid.api.key}")
@@ -32,8 +34,9 @@ public class SendGridEmailSender implements IMailSender {
     private String domain;
 	
 	@Override
-	public ResponseEntity<String> sendEmailVerification(String email, String verificationToken) {
-		String link = domain + FARMER_EMAIL_VERIFICATION + "?token=" + verificationToken;
+	public ResponseEntity<String> sendEmailVerification(String email, String verificationToken, boolean isFarmer) {
+		String verificationPath = isFarmer ? FARMER_EMAIL_VERIFICATION : CUSTOMER_EMAIL_VERIFICATION;
+		String link = domain + verificationPath + "?token=" + verificationToken;
 		String header = "Registration Confirmation";
 		String text = "To complete your registration, click the button below:";
 		String footer = "If the button does not work, copy and open the following link manually";

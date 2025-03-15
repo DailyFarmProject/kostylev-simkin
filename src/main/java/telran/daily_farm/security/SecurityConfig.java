@@ -40,8 +40,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(FARMER_REGISTER, FARMER_LOGIN, FARMER_REFRESH_TOKEN, FARMER_EMAIL_VERIFICATION,
                         		FARMER_EMAIL_VERIFICATION_RESEND, RESET_PASSWORD, FARMER_CHANGE_EMAIL,
-                        		FARMER_NEW_EMAIL_VERIFICATION,GET_ALL_SETS,GET_LANGUAGES, "/swagger-ui/**", "/v3/**").permitAll()
+                        		FARMER_NEW_EMAIL_VERIFICATION,CUSTOMER_REGISTER, CUSTOMER_LOGIN, CUSTOMER_REFRESH_TOKEN, GET_ALL_SETS,GET_LANGUAGES, "/swagger-ui/**", "/v3/**").permitAll()
                         .requestMatchers("/farmer/**").hasRole("FARMER")
+                        .requestMatchers("/customer/**").hasRole("CUSTOMER")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint) )
