@@ -77,37 +77,62 @@ public class CustomerService implements ICustomer {
     @Override
     @Transactional
     public ResponseEntity<String> emailVerification(String verificationToken) {
-        log.info("Service.emailVerification. Request to email verification");
+        log.info("Service.emailVerification - Request received. Token: {}", verificationToken);
 
         try {
+            
             String emailFromToken = jwtService.extractUserEmail(verificationToken);
-            log.info("Service.emailVerification. Email from token - " + emailFromToken);
+            log.info("Service.emailVerification - Extracted email from token: {}", emailFromToken);
 
-            if (jwtService.isTokenValid(verificationToken, emailFromToken)
-                    && !jwtService.isTokenExpired(verificationToken) 
-                    && !blackListService.isBlacklisted(verificationToken)) {
+           
+            boolean isTokenValid = jwtService.isTokenValid(verificationToken, emailFromToken);
+            boolean isTokenExpired = jwtService.isTokenExpired(verificationToken);
+            boolean isTokenBlacklisted = blackListService.isBlacklisted(verificationToken);
 
-                log.info("Service.emailVerification. Token is valid - " + emailFromToken);
+            log.info("Service.emailVerification - Token valid: {}, Token expired: {}, Token blacklisted: {}",
+                     isTokenValid, isTokenExpired, isTokenBlacklisted);
 
-                Customer customer = customerRepo.findByEmail(emailFromToken)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT, CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
-
-                log.info("Service.emailVerification Customer exists");
-
-                CustomerCredential credential = credentialRepo.findByCustomer(customer);
-                credential.setVerificated(true);
-
-                blackListService.addToBlacklist(verificationToken);
-                log.info("Service.emailVerification Set verificated true - " + emailFromToken);
-            } else {
+            
+            if (!isTokenValid || isTokenExpired || isTokenBlacklisted) {
+                log.error("Service.emailVerification - Invalid token for email: {}", emailFromToken);
                 throw new JwtException(INVALID_TOKEN);
             }
+
+            
+            Customer customer = customerRepo.findByEmail(emailFromToken)
+                    .orElseThrow(() -> {
+                        log.error("Service.emailVerification - No customer found for email: {}", emailFromToken);
+                        return new ResponseStatusException(HttpStatus.CONFLICT, CUSTOMER_WITH_THIS_EMAIL_IS_NOT_EXISTS);
+                    });
+
+            log.info("Service.emailVerification - Customer found: {}", customer.getEmail());
+
+            
+            CustomerCredential credential = credentialRepo.findByCustomer(customer);
+            if (credential == null) {
+                log.error("Service.emailVerification - No credentials found for customer: {}", customer.getEmail());
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "No credentials found for customer");
+            }
+
+            
+            credential.setVerificated(true);
+            log.info("Service.emailVerification - Customer verification updated: {}", customer.getEmail());
+
+            
+            blackListService.addToBlacklist(verificationToken);
+            log.info("Service.emailVerification - Token blacklisted: {}", verificationToken);
+
+            return ResponseEntity.ok(EMAIL_IS_VERIFICATED);
+
+        } catch (JwtException e) {
+            log.error("Service.emailVerification - JWT Exception: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-            log.error("Service.emailVerification Invalid token" + INVALID_TOKEN);
-            throw new JwtException(INVALID_TOKEN);
+            log.error("Service.emailVerification - Unexpected error: {}", e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error during verification");
         }
-        return ResponseEntity.ok(EMAIL_IS_VERIFICATED);
     }
+
     
     @Override
     @Transactional

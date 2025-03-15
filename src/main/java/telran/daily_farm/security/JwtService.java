@@ -21,7 +21,7 @@ public class JwtService {
     private String secretKey;
 
     @Value("${jwt.verification.token.validity}")
-    private long verificationTikenValidity;
+    private long verificationTokenValidity;
     
     @Value("${jwt.access.token.validity}")
     private long accessTokenValidity;
@@ -30,6 +30,7 @@ public class JwtService {
     private long refreshTokenValidity ;
 
     private Key getSigningKey() {
+    	log.debug("JwtService. Decoding secretKey for signing...");
     	Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey)); 
         return  key;
     }
@@ -48,52 +49,69 @@ public class JwtService {
     }
     
     public String generateVerificationTokenForUpdateEmail(String uuid, String email, String newEmail) {
+        log.debug("JwtService. Generating verification token for email update: " + email + " -> " + newEmail);
+        log.debug("JwtService. verificationTokenValidity = " + verificationTokenValidity);
     	String token = Jwts.builder()
                 .subject(uuid)
                 .claim("email", email)
                 .claim("newEmail", newEmail)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + verificationTikenValidity))
+                .expiration(new Date(System.currentTimeMillis() + verificationTokenValidity))
                 
                 .signWith(getSigningKey()) 
                 .compact();
-    	log.debug("JwtService. Token for farmer " + email+ "generated and returned to user");
+    	log.debug("JwtService. Generated token: " + token);
         return token;
     }
 
     public String generateVerificationToken(String uuid, String email) {
+        log.debug("JwtService. Generating verification token for: " + email);
+        log.debug("JwtService. verificationTokenValidity = " + verificationTokenValidity);
+        
+        if (verificationTokenValidity <= 0) {
+            log.error("JwtService. ERROR: verificationTokenValidity is not set properly!");
+        }
+        
+        log.debug("JwtService. Secret Key: " + (secretKey != null ? "Loaded" : "NOT LOADED"));
+        
     	String token = Jwts.builder()
                 .subject(uuid)
                 .claim("email", email)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + verificationTikenValidity))
+                .expiration(new Date(System.currentTimeMillis() + verificationTokenValidity))
                 
                 .signWith(getSigningKey()) 
                 .compact();
-    	log.debug("JwtService. Token for farmer " + email+ "generated and returned to user");
+    	log.debug("JwtService. Generated token: " + token);
         return token;
     }
     public String generateAccessToken(String uuid, String email) {
-        return Jwts.builder()
+    	String token =  Jwts.builder()
         		 .subject(uuid)
                  .claim("email", email)
                  .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenValidity))
                 .signWith(getSigningKey()) 
                 .compact();
+        log.debug("JwtService. Generated access token: " + token);
+        return token;
     }
 
     public String generateRefreshToken(String uuid, String email) {
-        return Jwts.builder()
+    	log.debug("JwtService. Generating refresh token for: " + email);
+    	String token = Jwts.builder()
         		 .subject(uuid)
                  .claim("email", email)
                  .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenValidity))
                 .signWith(getSigningKey()) 
                 .compact();
+        log.debug("JwtService. Generated refresh token: " + token);
+        return token;
     }
     
     public String extractUserId(String token) {
+    	log.debug("JwtService. Extracting user ID from token...");
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -106,18 +124,26 @@ public class JwtService {
 
     @SuppressWarnings("deprecation")
 	private Claims extractAllClaims(String token) {
-        return getParser().parseClaimsJws(token).getBody();  
+    	 try {
+        return getParser().parseClaimsJws(token).getBody();
+    	 } catch (JwtException e) {
+             log.error("JwtService. ERROR extracting claims: " + e.getMessage());
+             throw e;
+         }
     }
 
     public String extractUserEmail(String token) {
+    	log.debug("JwtService. Extracting email from token...");
         return extractClaim(token, claims -> claims.get("email", String.class));
     }
     
     public String extractUserNewEmail(String token) {
+    	 log.debug("JwtService. Extracting new email from token...");
         return extractClaim(token, claims -> claims.get("newEmail", String.class));
     }
 
     public Date extractExpiration(String token) {
+    	 log.debug("JwtService. Extracting expiration date from token...");
         return extractClaim(token, Claims::getExpiration);
     }
 
@@ -127,10 +153,26 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token, String email) {
+    	 log.debug("JwtService. Validating token for email: " + email);
+    	 try {
+             String extractedEmail = extractUserEmail(token);
+             boolean isExpired = isTokenExpired(token);
+             
+             log.debug("JwtService. Extracted email: " + extractedEmail);
+             log.debug("JwtService. Token is expired: " + isExpired);
         return extractUserEmail(token).equals(email) && !isTokenExpired(token);
+    	 } catch (Exception e) {
+             log.error("JwtService. ERROR validating token: " + e.getMessage());
+             return false;
+         }
     }
 
     public boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    	Date expirationDate = extractExpiration(token);
+        boolean expired = expirationDate.before(new Date());
+        
+        log.debug("JwtService. Token expiration date: " + expirationDate);
+        log.debug("JwtService. Is token expired? " + expired);
+        return expired;
     }
 }

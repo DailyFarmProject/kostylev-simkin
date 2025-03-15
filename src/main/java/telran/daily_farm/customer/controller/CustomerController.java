@@ -43,7 +43,13 @@ public class CustomerController {
     
     @Operation(summary = "Email verification", description = "Verify customer email with a token")
     @GetMapping(CUSTOMER_EMAIL_VERIFICATION)
-    public ResponseEntity<String> emailVerification(@RequestParam String token) {
+    public ResponseEntity<String> emailVerification(@RequestParam("token") String token) {
+        log.info("Received request to verify email. Token: {}", token);
+
+        if (token == null || token.isEmpty()) {
+            log.error("Error: there is no token!");
+            return ResponseEntity.badRequest().body("Error: there is no token!");
+        }
         return customerService.emailVerification(token);
     }
     
