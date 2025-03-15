@@ -1,6 +1,7 @@
 package telran.daily_farm.farmer.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ import static telran.daily_farm.api.messages.ErrorMessages.*;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -52,6 +54,9 @@ public class FarmerService implements IFarmer {
 
 	@Autowired
 	ILocationService locationService;
+	
+	 @Value("${jwt.refresh.token.validity}")
+	 private long languageCacheValidity ;
 
 	@Override
 	@Transactional
@@ -66,12 +71,19 @@ public class FarmerService implements IFarmer {
 
 		farmer.setBalance(0.);
 		log.info("Servise. Starting balanse - 0 added successfully");
-
+		
+		farmer.setFarmerLanguage(lang);
+		
 		farmerRepo.save(farmer);
 		log.info("Servise. Farmer saved to database");
+		
+		redisTemplate.opsForValue().set("userID-" + farmer.getId(), lang , languageCacheValidity, TimeUnit.MILLISECONDS);
+		
+		
 		farmerRepo.flush();
 		
-		redisTemplate.opsForValue().set("user:language:" + farmer.getId(), lang);
+		
+		
 
 		FarmerCredential credential = FarmerCredential.builder().createdAt(LocalDateTime.now())
 				.password_last_updated(LocalDateTime.now())
