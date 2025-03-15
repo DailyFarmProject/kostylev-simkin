@@ -91,7 +91,7 @@ public class CustomerController {
         return customerService.generateAndSendNewPassword(sendToRequestDto.getEmail());
     }
     
-    //Updating the customer's data
+    //Changing customer's data
     
     @Operation(summary = "Update customer data", description = "Update customer details")
     @PutMapping(CUSTOMER_EDIT)

@@ -194,7 +194,7 @@ public class CustomerService implements ICustomer {
         credential.setRefreshToken("");
         log.info("Service.logoutCustomer RefreshToken removed from credential");
 
-        return ResponseEntity.ok("Customer removed");
+        return ResponseEntity.ok("Customer logged out successfully");
     }
 
   //Changing and restoring the password
