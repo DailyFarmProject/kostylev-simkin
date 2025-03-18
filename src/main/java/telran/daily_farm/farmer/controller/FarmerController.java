@@ -64,7 +64,7 @@ public class FarmerController {
 	public ResponseEntity<String> registerFarmer(@Valid @RequestBody FarmerRegistrationDto farmerDto,
 			@RequestHeader(value = "X-Latitude", required = false) Double latitude,
 			@RequestHeader(value = "X-Longitude", required = false) Double longitude,
-			@RequestHeader(value = "Accept-Language", defaultValue = "en") String brouserLanguage,
+			@RequestHeader(value = "Accept-Language", defaultValue = "en") String browserLanguage,
 			@RequestHeader(value = "X-User-Language", required = false) String userLanguage) {
 
 		log.info("Controller. Request for registration new farmer - " + farmerDto.getEmail());
@@ -79,7 +79,7 @@ public class FarmerController {
 		
 		String language;
 		if(userLanguage == null || userLanguage.isBlank())
-			language = brouserLanguage != null ? brouserLanguage.split(",")[0] : "en";
+			language = browserLanguage != null ? browserLanguage.split(",")[0] : "en";
 		else
 			language = userLanguage;
 			

@@ -2,17 +2,16 @@ package telran.daily_farm.api.dto.order;
 
 
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class CreateOrderResponseDto {
+public class CreateOrderRequestDto {
 	
-	private double sumOfOrder;
+	private UUID customerId;
 	
-	private String message;
-
-	private String paymentLink;
-
+	private UUID farmSetId;
 }

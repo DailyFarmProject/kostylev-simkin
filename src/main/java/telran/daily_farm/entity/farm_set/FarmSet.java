@@ -42,13 +42,13 @@ public class FarmSet {
 
 	@Column(nullable = false)
 	int availibleCount;
-	
-//	@Column(nullable = false)
-//	boolean abailible;
-	
+
+	@Column(nullable = false)
+	boolean abailible;
+
 	@Column(nullable = false)
 	LocalDateTime pickupTimeStart;
-	
+
 	@Column(nullable = false)
 	LocalDateTime pickupTimeEnd;
 
@@ -63,6 +63,12 @@ public class FarmSet {
 	@ManyToOne
 	@JoinColumn(name = "category_id", nullable = false)
 	FarmSetCategory category;
+
+
+
+	public FarmSet(UUID id) {
+			this.id = id;
+		}
 
 	public static FarmSetResponseDto buildFromEntity(FarmSet fs) {
 		return FarmSetResponseDto.builder().category(fs.category.category).size(fs.size.size).id(fs.id)

@@ -45,6 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				|| requestURI.equals(CREATE_ORDER)
 				|| requestURI.equals(CUSTOMER_REGISTER)
 				|| requestURI.equals(CUSTOMER_LOGIN)
+				|| requestURI.startsWith("/paypal")
 				|| requestURI.equals("/swagger-ui.html") 
 				|| requestURI.startsWith("/swagger") 
 				|| requestURI.startsWith("/v3")) {

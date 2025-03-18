@@ -38,14 +38,7 @@ public class AuthService {
 
 		
 
-//        if (clientOptional.isPresent()) {
-//        	Client client = clientOptional.get();
-//            if (passwordEncoder.matches(password, client.getPassword())) {
-//                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-//                String uuid = client.getId().toString();
-//                return jwtService.generateToken(uuid, email);
-//            }
-//        } else
+
 		if (farmerOptional.isPresent()) {
 			Farmer farmer = farmerOptional.get();
 			FarmerCredential credential = credentialRepo.findByFarmer(farmer);
@@ -55,12 +48,16 @@ public class AuthService {
 			if (passwordEncoder.matches(password, credential.getHashedPassword())) {
 				log.info("Authenticate. Password is valid");
 				String uuid = farmer.getId().toString();
+				
 				String accessToken = jwtService.generateAccessToken(uuid, email);
+				log.info("access token - " + accessToken);
 				String refreshToken = jwtService.generateRefreshToken(uuid, email);
+				log.info("refresh token - " + refreshToken);
+				
 				credential.setRefreshToken(refreshToken);
 				credentialRepo.save(credential);
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-
+				log.info("login success!!! ");
 				return new TokensResponseDto(accessToken, refreshToken);
 			}
 		}
