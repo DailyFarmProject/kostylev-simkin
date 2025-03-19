@@ -105,7 +105,7 @@ public class FarmerService implements IFarmer {
 		log.info("Service. Address added successfully");
 
 		gridSender.sendEmailVerification(email,
-				jwtService.generateVerificationToken(farmer.getId().toString(), email));
+				jwtService.generateVerificationToken(farmer.getId().toString(), email), true);
 
 		return ResponseEntity.ok("Farmer added successfully. You need to verify your email");
 	}
@@ -137,7 +137,7 @@ public class FarmerService implements IFarmer {
 		if(!credentialRepo.findByFarmer(farmer).isVerificated()) {
 			log.debug("Service. Login. Email is not verificated. Send link to email -" + email);
 			gridSender.sendEmailVerification(email,
-					jwtService.generateVerificationToken(farmer.getId().toString(), email));
+					jwtService.generateVerificationToken(farmer.getId().toString(), email), true);
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, EMAIL_IS_NOT_VERIFICATED);
 		}
 		
@@ -320,7 +320,7 @@ public class FarmerService implements IFarmer {
 		Farmer farmer = farmerRepo.findByEmail(email).orElseThrow(()->
 			new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
 
-		emailService.sendEmailVerification(email, jwtService.generateVerificationToken(farmer.getId().toString(),email));
+		emailService.sendEmailVerification(email, jwtService.generateVerificationToken(farmer.getId().toString(),email), true );
 		return ResponseEntity.ok(CHECK_EMAIL_FOR_VERIFICATION_LINK);
 	}
 

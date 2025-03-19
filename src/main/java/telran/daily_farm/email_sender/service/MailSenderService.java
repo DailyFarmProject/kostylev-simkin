@@ -2,6 +2,7 @@ package telran.daily_farm.email_sender.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.*;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -14,7 +15,7 @@ import static telran.daily_farm.api.ApiConstants.*;
 
 
 
-@Service
+@Service("mailSenderService")
 @Slf4j
 public class MailSenderService implements IMailSender {
 
@@ -30,8 +31,9 @@ public class MailSenderService implements IMailSender {
     
     
 	@Override
-	public ResponseEntity<String> sendEmailVerification(String email, String verificationToken) {
-		String link = domain+FARMER_EMAIL_VERIFICATION+"?token="+ verificationToken;
+	public ResponseEntity<String> sendEmailVerification(String email, String verificationToken, boolean isFarmer) {
+		String verificationPath = isFarmer ? FARMER_EMAIL_VERIFICATION : CUSTOMER_EMAIL_VERIFICATION;
+		String link = domain+verificationPath +"?token="+ verificationToken;
 		System.out.println("generated link - " + link);
 		 String htmlContent =  
 				 "<!DOCTYPE html>" +
