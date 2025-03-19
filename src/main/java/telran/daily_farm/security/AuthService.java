@@ -51,12 +51,16 @@ public class AuthService {
 			if (passwordEncoder.matches(password, credential.getHashedPassword())) {
 				log.info("Authenticate. Password is valid");
 				String uuid = farmer.getId().toString();
+				
 				String accessToken = jwtService.generateAccessToken(uuid, email);
+				log.info("access token - " + accessToken);
 				String refreshToken = jwtService.generateRefreshToken(uuid, email);
+				log.info("refresh token - " + refreshToken);
+				
 				credential.setRefreshToken(refreshToken);
 				credentialRepo.save(credential);
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-
+				log.info("login success!!! "); 
 				return new TokensResponseDto(accessToken, refreshToken);
 			}
 		} else if (customerOptional.isPresent()) {
@@ -75,7 +79,7 @@ public class AuthService {
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 				return new TokensResponseDto(accessToken, refreshToken);
 			}
-		}
+		 }
 		throw new BadCredentialsException(WRONG_USER_NAME_OR_PASSWORD);
 	}
 

@@ -51,7 +51,7 @@ public class FarmSetService  implements IFarmSetService{
 		
 		FarmSet farmSet = FarmSet.builder()
 				.availibleCount(farmSetDto.getAvailibleCount())
-				.abailible(true)
+//				.abailible(true)
 				.description(farmSetDto.getDescription())
 				.price(farmSetDto.getPrice())
 				.farmer(farmerRepo.findByid(id).get())

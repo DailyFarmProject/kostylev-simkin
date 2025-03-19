@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 import telran.daily_farm.api.dto.FarmerRegistrationDto;
 import telran.daily_farm.entity.farm_set.FarmSet;
+import telran.daily_farm.entity.order.OrderFarmSet;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,13 +42,13 @@ public class Farmer {
 
 	@Column(unique = true, nullable = false)
 	String email;
-	
+
 	@Column(nullable = false)
 	String company;
 
 	@Column(nullable = false)
 	String phone;
-	
+
 	@Column(nullable = false)
 	String farmerLanguage;
 
@@ -58,10 +59,12 @@ public class Farmer {
 
 	@OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL)
 	FarmerCredential credential;
-	
+
 	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
 	List<FarmSet> farmSets;;
 
+	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
+	List<OrderFarmSet> orders;;
 
 //	@Embedded
 //	PayPalConfigDto paypalDetails;
@@ -72,17 +75,12 @@ public class Farmer {
 //	@OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL)
 //	Address address;
 
-
-	
-	   public Farmer(UUID id) { 
-	        this.id = id;
-	    }
+	public Farmer(UUID id) {
+		this.id = id;
+	}
 
 	public static Farmer of(FarmerRegistrationDto dto) {
-		return Farmer.builder().email(dto.getEmail())
-				.phone(dto.getPhone())
-				.company(dto.getCompany())
-				.build();
+		return Farmer.builder().email(dto.getEmail()).phone(dto.getPhone()).company(dto.getCompany()).build();
 	}
 
 }
