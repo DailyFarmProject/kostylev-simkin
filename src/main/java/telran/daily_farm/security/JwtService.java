@@ -85,10 +85,11 @@ public class JwtService {
     	log.debug("JwtService. Generated token: " + token);
         return token;
     }
-    public String generateAccessToken(String uuid, String email) {
+    public String generateAccessToken(String uuid, String email, String role) {
     	String token =  Jwts.builder()
         		 .subject(uuid)
                  .claim("email", email)
+                 .claim("role", role)
                  .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenValidity))
                 .signWith(getSigningKey()) 
@@ -97,11 +98,12 @@ public class JwtService {
         return token;
     }
 
-    public String generateRefreshToken(String uuid, String email) {
+    public String generateRefreshToken(String uuid, String email, String role) {
     	log.debug("JwtService. Generating refresh token for: " + email);
     	String token = Jwts.builder()
         		 .subject(uuid)
                  .claim("email", email)
+                 .claim("role", role)
                  .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + refreshTokenValidity))
                 .signWith(getSigningKey()) 
@@ -135,6 +137,11 @@ public class JwtService {
     public String extractUserEmail(String token) {
     	log.debug("JwtService. Extracting email from token...");
         return extractClaim(token, claims -> claims.get("email", String.class));
+    }
+    
+    public String extractUserRole(String token) {
+    	log.debug("JwtService. Extracting role from token...");
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
     
     public String extractUserNewEmail(String token) {

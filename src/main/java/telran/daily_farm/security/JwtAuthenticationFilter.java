@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
@@ -20,12 +20,12 @@ import static telran.daily_farm.api.ApiConstants.*;
 import java.io.IOException;
 import java.util.Date;
 
-
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtService jwtService;
-	private final UserDetailsService userDetailsService;
+	private final FarmerDetailsService farmerDetailsService;
+	private final CustomerDetailsService customerDetailsService;
 	private final TokenBlacklistService blackListService;
 
 	@Override
@@ -36,27 +36,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		log.info("OncePerRequestFilter. requestURI" + requestURI);
 		if (requestURI.equals(FARMER_REFRESH_TOKEN) 
 				|| requestURI.equals(FARMER_EMAIL_VERIFICATION)
-				|| requestURI.equals(FARMER_EMAIL_VERIFICATION_RESEND)
+				|| requestURI.equals(FARMER_EMAIL_VERIFICATION_RESEND) 
 				|| requestURI.equals(RESET_PASSWORD)
 				|| requestURI.equals(FARMER_CHANGE_EMAIL)
 				|| requestURI.equals(FARMER_NEW_EMAIL_VERIFICATION)
-				|| requestURI.equals(FARMER_REGISTER)
+				|| requestURI.equals(FARMER_REGISTER) 
 				|| requestURI.equals(CUSTOMER_REFRESH_TOKEN)
 				|| requestURI.equals(CUSTOMER_EMAIL_VERIFICATION)
-				|| requestURI.equals(CUSTOMER_EMAIL_VERIFICATION_RESEND)
+				|| requestURI.equals(CUSTOMER_EMAIL_VERIFICATION_RESEND) 
 				|| requestURI.equals(CUSTOMER_RESET_PASSWORD)
 				|| requestURI.equals(CUSTOMER_CHANGE_EMAIL)
-				|| requestURI.equals(CUSTOMER_NEW_EMAIL_VERIFICATION) 
-				|| requestURI.equals(CUSTOMER_REGISTER)
+				|| requestURI.equals(CUSTOMER_NEW_EMAIL_VERIFICATION)
+				|| requestURI.equals(CUSTOMER_REGISTER) 
+				|| requestURI.equals(GET_ALL_SETS) 
 				|| requestURI.equals(CUSTOMER_LOGIN)
-				|| requestURI.equals(GET_ALL_SETS)
-				|| requestURI.equals(CREATE_ORDER)
-				|| requestURI.equals(CUSTOMER_REGISTER)
-				|| requestURI.equals(CUSTOMER_LOGIN)
-				|| requestURI.startsWith("/paypal")
-				|| requestURI.equals("/swagger-ui.html") 
-				|| requestURI.startsWith("/swagger") 
-				|| requestURI.startsWith("/v3")) {
+				|| requestURI.startsWith("/paypal") || requestURI.equals("/swagger-ui.html")
+				|| requestURI.startsWith("/swagger") || requestURI.startsWith("/v3")) {
 			log.info("OncePerRequestFilter. Request does not need token");
 			chain.doFilter(request, response);
 			return;
@@ -64,10 +59,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String token = request.getHeader("Authorization");
 		log.info("JwtAuthenticationFilter(OncePerRequestFilter). Token received from header " + token);
-		if (token != null && token.startsWith("Bearer ") ) {
+		if (token != null && token.startsWith("Bearer ")) {
 			token = token.substring(7);
 			log.info("OncePerRequestFilter. Token is not null and starts with Bearer. ");
-			
+
 			try {
 				if (blackListService.isBlacklisted(token)) {
 					log.info("JwtAuthenticationFilter(OncePerRequestFilter). Token is blacklisted ");
@@ -76,27 +71,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				log.info("OncePerRequestFilter. token is expires - " + jwtService.isTokenExpired(token));
 				String username = jwtService.extractUserEmail(token);
 				log.info("JwtAuthenticationFilter(OncePerRequestFilter). User name recived from token - " + username);
-				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-				log.info("OncePerRequestFilter. Recived userDetails + role");
-				log.info("OncePerRequestFilter. jwtService.isTokenValid - "
-						+ jwtService.isTokenValid(token, userDetails.getUsername()));
-				log.info("OncePerRequestFilter. jwtService.extractExpiration - " + jwtService.extractExpiration(token));
-				log.info("OncePerRequestFilter. Date now - " + new Date());
-				log.info("OncePerRequestFilter. jwtService.extractExpiration - "
-						+ jwtService.extractExpiration(token).after(new Date()));
-				if (jwtService.isTokenValid(token, userDetails.getUsername())
-						&& jwtService.extractExpiration(token).after(new Date())) {
-					log.info("OncePerRequestFilter. Token checked - valid");
 
-					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-							userDetails, null, userDetails.getAuthorities());
-					SecurityContextHolder.getContext().setAuthentication(authentication);
+				String role = jwtService.extractUserRole(token);
+				if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+					UserDetails userDetails = role.equals("farmer") ? farmerDetailsService.loadUserByUsername(username)
+							: customerDetailsService.loadUserByUsername(username);
+
+					log.info("OncePerRequestFilter. Recived userDetails + role");
+					log.info("OncePerRequestFilter. jwtService.isTokenValid - {} ");
+					
+					if (jwtService.isTokenValid(token, userDetails.getUsername())
+							&& jwtService.extractExpiration(token).after(new Date())) {
+						log.info("OncePerRequestFilter. Token checked - valid");
+
+						UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+								userDetails, null, userDetails.getAuthorities());
+						authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+						SecurityContextHolder.getContext().setAuthentication(authToken);
+					}
 				} else
 					throw new JwtException(INVALID_TOKEN);
 			} catch (ExpiredJwtException | SecurityException | MalformedJwtException e) {
 				log.error("error" + e.getLocalizedMessage());
 				request.setAttribute("JWT_ERROR", e.getMessage());
-		        throw new JwtException(e.getMessage());
+				throw new JwtException(e.getMessage());
 
 			}
 		}

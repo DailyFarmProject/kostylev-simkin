@@ -65,5 +65,5 @@ public interface ApiConstants {
 	
 	String CHANGE_USER_LANGUAGE = "/lang";
 
-	String CREATE_ORDER = "/order";
+	String CREATE_ORDER = "/customer/order";
 }
