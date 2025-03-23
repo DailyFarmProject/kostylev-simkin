@@ -141,7 +141,7 @@ public class FarmerService implements IFarmer {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, EMAIL_IS_NOT_VERIFICATED);
 		}
 		
-		TokensResponseDto tokens = authService.authenticate(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+		TokensResponseDto tokens = authService.authenticateFarmer(loginRequestDto.getEmail(), loginRequestDto.getPassword());
 		log.debug("Service. Login successfull, token returned to user");
 		return ResponseEntity.ok(tokens);
 	}
@@ -171,7 +171,7 @@ public class FarmerService implements IFarmer {
 		log.info("Service. updatePassword. New password - " + credential.getHashedPassword());
 		credential.setPassword_last_updated(LocalDateTime.now());
 
-		TokensResponseDto tokens = authService.authenticate(farmer.getEmail(), changePasswordDto.getNewPassword() );
+		TokensResponseDto tokens = authService.authenticateFarmer(farmer.getEmail(), changePasswordDto.getNewPassword() );
 
 		return ResponseEntity.ok(tokens);
 	}

@@ -5,9 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,9 +22,9 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    //private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final JwtService jwtService;
-    private final UserDetailsServiceImpl userDetailsService;
+	private final FarmerDetailsService farmerDetailsService;
+	private final CustomerDetailsService customerDetailsService;
     private final TokenBlacklistService blackListService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
@@ -40,12 +37,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(FARMER_REGISTER, FARMER_LOGIN, FARMER_REFRESH_TOKEN, FARMER_EMAIL_VERIFICATION,
                         		FARMER_EMAIL_VERIFICATION_RESEND, RESET_PASSWORD, FARMER_CHANGE_EMAIL,
-
-
-
                         		FARMER_NEW_EMAIL_VERIFICATION,CUSTOMER_REGISTER, CUSTOMER_LOGIN, CUSTOMER_REFRESH_TOKEN, CUSTOMER_EMAIL_VERIFICATION,
                         		CUSTOMER_EMAIL_VERIFICATION_RESEND, CUSTOMER_RESET_PASSWORD, CUSTOMER_CHANGE_EMAIL,
-                        		CUSTOMER_NEW_EMAIL_VERIFICATION, GET_ALL_SETS,GET_LANGUAGES, "/swagger-ui/**", "/v3/**").permitAll()
+                        		CUSTOMER_NEW_EMAIL_VERIFICATION, GET_ALL_SETS,GET_LANGUAGES, "/paypal/**", "/swagger-ui/**", "/v3/**").permitAll()
 
                         .requestMatchers("/farmer/**").hasRole("FARMER")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER") 
@@ -54,18 +48,11 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint) )
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService,blackListService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, farmerDetailsService, customerDetailsService , blackListService), UsernamePasswordAuthenticationFilter.class)
 
                 .build();
     }
 
-    @Bean
-    AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(provider);
-    }
 
     @Bean
     PasswordEncoder passwordEncoder() {

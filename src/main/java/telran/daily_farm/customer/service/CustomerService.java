@@ -170,7 +170,7 @@ public class CustomerService implements ICustomer {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, EMAIL_IS_NOT_VERIFICATED);
         }
 
-        TokensResponseDto tokens = authService.authenticate(email, loginRequestDto.getPassword());
+        TokensResponseDto tokens = authService.authenticateCustomer(email, loginRequestDto.getPassword());
         log.debug("Service. Login successful, token returned to user");
         return ResponseEntity.ok(tokens);
     }
@@ -216,7 +216,7 @@ public class CustomerService implements ICustomer {
         credential.setPasswordLastUpdated(LocalDateTime.now());
         log.info("Service.updatePassword. New password set for customer - " + customer.getEmail());
         
-        TokensResponseDto tokens = authService.authenticate(customer.getEmail(), changePasswordDto.getNewPassword());
+        TokensResponseDto tokens = authService.authenticateCustomer(customer.getEmail(), changePasswordDto.getNewPassword());
 
         return ResponseEntity.ok(tokens);
     }

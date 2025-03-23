@@ -15,10 +15,7 @@ import telran.daily_farm.customer.repo.CustomerCredentialRepository;
 import telran.daily_farm.customer.repo.CustomerRepository;
 import telran.daily_farm.entity.Customer;
 import telran.daily_farm.entity.CustomerCredential;
-import telran.daily_farm.entity.Farmer;
-import telran.daily_farm.entity.FarmerCredential;
-import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
-import telran.daily_farm.farmer.repo.FarmerRepository;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +23,9 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class CustomerDetailsService implements UserDetailsService {
 	private final CustomerRepository customerRepo;
-	private final FarmerRepository farmerRepo;
 	private final CustomerCredentialRepository customerCredentialRepo;
-	private final FarmerCredentialRepository farmerCredentialRepo;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,14 +35,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			CustomerCredential customerCredential = customerCredentialRepo.findByCustomer(customer);
 			return new UserDetailsWithId(customer.getEmail(), customerCredential.getHashedPassword(),
 					List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER")), customer.getId());
-		}
-
-		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(username);
-		if (farmerOptional.isPresent()) {
-			Farmer farmer = farmerOptional.get();
-			FarmerCredential credential = farmerCredentialRepo.findByFarmer(farmer);
-			return new UserDetailsWithId(farmer.getEmail(), credential.getHashedPassword(),
-					List.of(new SimpleGrantedAuthority("ROLE_FARMER")), farmer.getId());
 		}
 
 		throw new UsernameNotFoundException(USER_NOT_FOUND);

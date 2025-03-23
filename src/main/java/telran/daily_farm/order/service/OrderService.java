@@ -2,6 +2,7 @@ package telran.daily_farm.order.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,7 +35,7 @@ public class OrderService implements IOrderService {
 
 	@Override
 	@Transactional
-	public CreateOrderResponseDto createOrder(CreateOrderRequestDto requestDto) {
+	public CreateOrderResponseDto createOrder(CreateOrderRequestDto requestDto, UUID id) {
 		log.info("OrderService: Create order request");
 
 		FarmSet farmSet = farmSetRepo.findById(requestDto.getFarmSetId()).get();
@@ -48,7 +49,8 @@ public class OrderService implements IOrderService {
 
 		farmSet.setAvailibleCount(farmSet.getAvailibleCount() - 1);
 		OrderFarmSet orderFarmSet = OrderFarmSet.builder().farmSet(farmSet)
-				.customer(customerRepo.findById(requestDto.getCustomerId()).get()).farmer(farmer)
+				.customer(customerRepo.findById(id).get())
+				.farmer(farmer)
 				.status(OrderStatus.WAITING_FOR_PAYMENT).createdAt(LocalDateTime.now()).sumOfOrder(farmSet.getPrice()).build();
 		log.info("OrderService : Create order - Created new order");
 

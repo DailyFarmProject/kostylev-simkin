@@ -11,7 +11,7 @@ import lombok.Getter;
 @Getter
 public class CreateOrderRequestDto {
 	
-	private UUID customerId;
+	
 	
 	private UUID farmSetId;
 }

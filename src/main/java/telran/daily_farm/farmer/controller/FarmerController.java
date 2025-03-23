@@ -155,7 +155,7 @@ public class FarmerController {
 	public ResponseEntity<RefreshTokenResponseDto> refresh(
 			@Parameter(description = "JWT токен", required = true) @RequestBody RefreshTokenRequestDto request) {
 		log.info("Controller/ refresh token starts");
-		return authService.refreshAccessToken(request.getRefreshToken());
+		return authService.refreshAccessTokenFarmer(request.getRefreshToken());
 	}
 
 	@Operation(summary = "Update phone, company and coordinates by one request", 
