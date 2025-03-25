@@ -7,6 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import telran.daily_farm.security.customer_auth.CustomerDetailsService;
+import telran.daily_farm.security.farmer_auth.FarmerDetailsService;
+import telran.daily_farm.security.token.JwtService;
+import telran.daily_farm.security.token.TokenBlacklistService;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,8 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				|| requestURI.equals(CUSTOMER_REGISTER) 
 				|| requestURI.equals(GET_ALL_SETS) 
 				|| requestURI.equals(CUSTOMER_LOGIN)
-				|| requestURI.startsWith("/paypal") || requestURI.equals("/swagger-ui.html")
-				|| requestURI.startsWith("/swagger") || requestURI.startsWith("/v3")) {
+				|| requestURI.startsWith("/paypal") ) {
 			log.info("OncePerRequestFilter. Request does not need token");
 			chain.doFilter(request, response);
 			return;

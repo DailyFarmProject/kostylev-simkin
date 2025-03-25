@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import telran.daily_farm.entity.order.OrderFarmSet;
+import telran.daily_farm.order.entity.OrderFarmSet;
 import telran.daily_farm.payment.entity.Payment;
 
 public interface PaymentRepository extends JpaRepository<Payment, UUID>{

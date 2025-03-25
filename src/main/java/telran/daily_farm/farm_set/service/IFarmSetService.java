@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 
-import telran.daily_farm.api.dto.farm_set.FarmSetDto;
-import telran.daily_farm.api.dto.farm_set.FarmSetResponseDto;
+import telran.daily_farm.farm_set.api.dto.FarmSetDto;
+import telran.daily_farm.farm_set.api.dto.FarmSetResponseDto;
 
 public interface IFarmSetService {
 

@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.order.CreateOrderRequestDto;
-import telran.daily_farm.api.dto.order.CreateOrderResponseDto;
+import telran.daily_farm.order.api.dto.CreateOrderRequestDto;
+import telran.daily_farm.order.api.dto.CreateOrderResponseDto;
 import telran.daily_farm.order.service.OrderService;
 import telran.daily_farm.security.UserDetailsWithId;
 

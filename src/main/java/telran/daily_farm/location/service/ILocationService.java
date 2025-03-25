@@ -1,7 +1,8 @@
 package telran.daily_farm.location.service;
 
-import telran.daily_farm.api.dto.AddressDto;
-import telran.daily_farm.api.dto.CoordinatesDto;
+import telran.daily_farm.location.dto.*;
+import telran.daily_farm.location.dto.AddressDto;
+import telran.daily_farm.location.dto.CoordinatesDto;
 
 public interface ILocationService {
 

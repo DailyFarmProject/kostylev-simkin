@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.PostConstruct;
-import telran.daily_farm.entity.farm_set.FarmSet;
-import telran.daily_farm.entity.farm_set.FarmSetCategory;
+import telran.daily_farm.farm_set.entity.FarmSet;
+import telran.daily_farm.farm_set.entity.FarmSetCategory;
 
 import static telran.daily_farm.api.ApiConstants.*;
 

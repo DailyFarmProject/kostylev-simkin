@@ -3,7 +3,6 @@ package telran.daily_farm.customer.service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,17 +13,17 @@ import io.jsonwebtoken.JwtException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.*;
+import telran.daily_farm.api.dto.security.TokensResponseDto;
+import telran.daily_farm.customer.api.dto.*;
+import telran.daily_farm.customer.entity.Customer;
+import telran.daily_farm.customer.entity.CustomerCredential;
 import telran.daily_farm.customer.repo.CustomerCredentialRepository;
 import telran.daily_farm.customer.repo.CustomerRepository;
 import telran.daily_farm.email_sender.service.IMailSender;
-import telran.daily_farm.email_sender.service.MailSenderService;
-import telran.daily_farm.email_sender.service.SendGridEmailSender;
-import telran.daily_farm.entity.Customer;
-import telran.daily_farm.entity.CustomerCredential;
-import telran.daily_farm.security.AuthService;
-import telran.daily_farm.security.JwtService;
-import telran.daily_farm.security.TokenBlacklistService;
+import telran.daily_farm.security.customer_auth.CustomerAuthService;
+import telran.daily_farm.security.token.JwtService;
+import telran.daily_farm.security.token.TokenBlacklistService;
+
 import static telran.daily_farm.api.messages.ErrorMessages.*;
 
 @Service
@@ -35,7 +34,7 @@ public class CustomerService implements ICustomer {
     private final CustomerRepository customerRepo;
     private final CustomerCredentialRepository credentialRepo;
     private final PasswordEncoder passwordEncoder;
-    private final AuthService authService;
+    private final CustomerAuthService authService;
     private final IMailSender mailSender;
     private final JwtService jwtService; 
     private final TokenBlacklistService blackListService; 

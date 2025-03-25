@@ -10,13 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.entity.farm_set.FarmSet;
-import telran.daily_farm.entity.farm_set.FarmSetCategory;
-import telran.daily_farm.entity.farm_set.FarmSetSize;
+import telran.daily_farm.farm_set.api.dto.FarmSetDto;
+import telran.daily_farm.farm_set.api.dto.FarmSetResponseDto;
+import telran.daily_farm.farm_set.entity.FarmSet;
+import telran.daily_farm.farm_set.entity.FarmSetCategory;
+import telran.daily_farm.farm_set.entity.FarmSetSize;
 import telran.daily_farm.farm_set.repo.FarmSetCategoryRepository;
 import telran.daily_farm.farm_set.repo.FarmSetRepository;
 import telran.daily_farm.farm_set.repo.FarmSetSizeRepository;
-import telran.daily_farm.api.dto.farm_set.*;
 import telran.daily_farm.farmer.repo.FarmerRepository;
 import telran.daily_farm.translate_service.LibreTranslateLocalService;
 import telran.daily_farm.utils.servise.UtilService;

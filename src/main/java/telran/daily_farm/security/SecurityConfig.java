@@ -1,7 +1,10 @@
 package telran.daily_farm.security;
 
 import lombok.RequiredArgsConstructor;
-
+import telran.daily_farm.security.customer_auth.CustomerDetailsService;
+import telran.daily_farm.security.farmer_auth.FarmerDetailsService;
+import telran.daily_farm.security.token.JwtService;
+import telran.daily_farm.security.token.TokenBlacklistService;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

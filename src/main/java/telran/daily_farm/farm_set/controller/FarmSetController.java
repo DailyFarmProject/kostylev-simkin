@@ -15,8 +15,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.farm_set.FarmSetDto;
-import telran.daily_farm.api.dto.farm_set.FarmSetResponseDto;
+import telran.daily_farm.farm_set.api.dto.FarmSetDto;
+import telran.daily_farm.farm_set.api.dto.FarmSetResponseDto;
 import telran.daily_farm.farm_set.service.FarmSetService;
 import telran.daily_farm.security.UserDetailsWithId;
 
