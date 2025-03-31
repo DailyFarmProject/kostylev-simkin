@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.security.RefreshTokenRequestDto;
-import telran.daily_farm.api.dto.security.RefreshTokenResponseDto;
-import telran.daily_farm.api.dto.security.TokensResponseDto;
 import telran.daily_farm.customer.api.dto.*;
 
 import telran.daily_farm.customer.service.ICustomer;
 import telran.daily_farm.security.UserDetailsWithId;
+import telran.daily_farm.security.api.dto.RefreshTokenRequestDto;
+import telran.daily_farm.security.api.dto.RefreshTokenResponseDto;
+import telran.daily_farm.security.api.dto.TokensResponseDto;
 import telran.daily_farm.security.customer_auth.CustomerAuthService;
 import telran.daily_farm.security.token.JwtService;
 
@@ -72,7 +72,7 @@ public class CustomerController {
   //Changing and restoring the password
     
     @PutMapping(CUSTOMER_CHANGE_PASSWORD)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<TokensResponseDto> customerUpdatePassword(
             @Valid @RequestBody ChangePasswordRequest changePasswordDto,
             @AuthenticationPrincipal UserDetailsWithId user) {
@@ -87,21 +87,21 @@ public class CustomerController {
     //Changing customer's data
     
     @PutMapping(CUSTOMER_EDIT)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<String> updateCustomer(@Valid @RequestBody CustomerUpdateDataRequestDto customerDto,
             @AuthenticationPrincipal UserDetailsWithId user) {
         return customerService.updateCustomer(user.getId(), customerDto);
     }
    
     @PutMapping(CUSTOMER_CHANGE_PHONE)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<String> customerUpdatePhone(@Valid @RequestBody String newPhone,
             @AuthenticationPrincipal UserDetailsWithId user) {
         return customerService.updatePhone(user.getId(), newPhone);
     }
 
     @PutMapping(CUSTOMER_CHANGE_FIRST_LAST_NAME)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<String> clientUpdateName(@Valid @RequestBody FullNameDto fullname,
             @AuthenticationPrincipal UserDetailsWithId user) {
         return customerService.changeName(user.getId(), fullname);
@@ -110,7 +110,7 @@ public class CustomerController {
     //Deleting an account
     
     @DeleteMapping(CUSTOMER_REMOVE)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<String> removeCustomer(@AuthenticationPrincipal UserDetailsWithId user) {
         return customerService.removeCustomer(user.getId());
     }
@@ -119,12 +119,12 @@ public class CustomerController {
 
 
     @PutMapping(CUSTOMER_CHANGE_EMAIL)
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<String> customerUpdateEmail(@RequestParam String token) {
         return customerService.updateEmail(token);
     }
     
- @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+ @PreAuthorize("hasRole('ROLE_CUSTOMER')")
  @GetMapping(CUSTOMER_EMAIL_CHANGE_VERIFICATION)
  public ResponseEntity<String> sendVerificationTokenForUpdateEmail(
          @RequestParam String newEmail,

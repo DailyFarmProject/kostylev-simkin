@@ -8,6 +8,7 @@ import telran.daily_farm.security.token.TokenBlacklistService;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,11 +19,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static telran.daily_farm.api.ApiConstants.*;
 
 import java.util.List;
 
 @Configuration
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 	private final JwtService jwtService;
@@ -38,11 +39,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(FARMER_REGISTER, FARMER_LOGIN, FARMER_REFRESH_TOKEN, FARMER_EMAIL_VERIFICATION,
-                        		FARMER_EMAIL_VERIFICATION_RESEND, RESET_PASSWORD, FARMER_CHANGE_EMAIL,
-                        		FARMER_NEW_EMAIL_VERIFICATION,CUSTOMER_REGISTER, CUSTOMER_LOGIN, CUSTOMER_REFRESH_TOKEN, CUSTOMER_EMAIL_VERIFICATION,
-                        		CUSTOMER_EMAIL_VERIFICATION_RESEND, CUSTOMER_RESET_PASSWORD, CUSTOMER_CHANGE_EMAIL,
-                        		CUSTOMER_NEW_EMAIL_VERIFICATION, GET_ALL_SETS,GET_LANGUAGES, "/paypal/**", "/swagger-ui/**", "/v3/**").permitAll()
+                        .requestMatchers(PulicEndpoints.getPublicEndpoinstWithPrefix()).permitAll()
 
                         .requestMatchers("/farmer/**").hasRole("FARMER")
                         .requestMatchers("/customer/**").hasRole("CUSTOMER") 

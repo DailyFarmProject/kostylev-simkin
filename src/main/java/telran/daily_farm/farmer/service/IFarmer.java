@@ -6,24 +6,12 @@ import org.springframework.http.ResponseEntity;
 
 import telran.daily_farm.farmer.api.dto.CoordinatesDto;
 import telran.daily_farm.farmer.api.dto.FarmerUpdateDataRequestDto;
+import telran.daily_farm.farmer.entity.Farmer;
 
 public interface IFarmer {
 
-//	ResponseEntity<String> registerFarmer(FarmerRegistrationDto farmerDto, String lang);
-//
-//	ResponseEntity<String> emailVerification(String verificationToken);
-//
-//	ResponseEntity<String> resendVerificationLink(String email);
-//
-//	ResponseEntity<String> removeFarmer(UUID id);
-//
-//	ResponseEntity<TokensResponseDto> loginFarmer(LoginRequestDto loginRequestDto);
-//
-//	ResponseEntity<String> logoutFarmer(UUID id, String token);
-//
-//	ResponseEntity<TokensResponseDto> updatePassword(UUID uuid, ChangePasswordRequest changePasswordDto);
-//	
-//	ResponseEntity<String> generateAndSendNewPassword(String email);
+	void createFarmer(Farmer farmer, CoordinatesDto coordinatesDto, String lang);
+
 
 	ResponseEntity<String> updateCoordinates(UUID uuid, CoordinatesDto coordinatesDto);
 
@@ -31,14 +19,8 @@ public interface IFarmer {
 
 	ResponseEntity<String> updateFarmer(UUID id, FarmerUpdateDataRequestDto farmerDto);
 
-//	ResponseEntity<String> sendVerificationTokenForUpdateEmail(UUID id, String newEmail);
-//
-//	ResponseEntity<String> sendVerificationTokenToNewEmail(String token);
-//	
-//	ResponseEntity<String> updateEmail(String token);
-
 	ResponseEntity<String> updateCompany(UUID id, String company);
+	
+	ResponseEntity<Void> changeLanguage(UUID id, String language);
 
-	// ResponseEntity<String> updateAddress(UUID uuid, AddressDto addressDto);
-	// ResponseEntity<String> changeName(UUID uuid, FullNameDto fullname);
 }

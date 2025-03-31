@@ -1,9 +1,7 @@
 package telran.daily_farm.email_sender.service;
 
-import static telran.daily_farm.api.ApiConstants.FARMER_CHANGE_EMAIL;
-import static telran.daily_farm.api.ApiConstants.FARMER_EMAIL_VERIFICATION;
-import static telran.daily_farm.api.ApiConstants.FARMER_NEW_EMAIL_VERIFICATION;
-import static telran.daily_farm.api.ApiConstants.CUSTOMER_EMAIL_VERIFICATION;
+import static telran.daily_farm.email_sender.api.EmailSenderApiConstants.*;
+import static telran.daily_farm.email_sender.api.SendEmailMessagesConstants.*;
 
 import java.io.IOException;
 
@@ -34,25 +32,17 @@ public class SendGridEmailSender implements IMailSender {
     private String domain;
 	
 	@Override
-	public ResponseEntity<String> sendEmailVerification(String email, String verificationToken, boolean isFarmer) {
-		String verificationPath = isFarmer ? FARMER_EMAIL_VERIFICATION : CUSTOMER_EMAIL_VERIFICATION;
+	public ResponseEntity<String> sendEmailVerification(String email, String verificationToken, String verificationPath) {
 		String link = domain + verificationPath + "?token=" + verificationToken;
-		String header = "Registration Confirmation";
-		String text = "To complete your registration, click the button below:";
-		String footer = "If the button does not work, copy and open the following link manually";
-		String htmlContent = getHtmlContent(link, header,text, footer);  
-
-		return sendEmail(email, "Email verification", htmlContent);
+		String htmlContent = getHtmlContent(link, EMAIL_VERIFICATION_HEADER, EMAIL_VERIFICATION_TEXT, EMAIL_VERIFICATION_FOOTER);  
+		return sendEmail(email, EMAIL_VERIFICATION_SUBJECT, htmlContent);
 	}
 	
 	@Override
 	public ResponseEntity<String> sendChangeEmailVerification(String email, String verificationTokenForUpdateEmail) {
 		String link = domain + FARMER_NEW_EMAIL_VERIFICATION+"?token="+ verificationTokenForUpdateEmail;
-		String header = "Confirmation of email change";
-		String text = "To complete email update, click the button below:";
-		String footer = "If the button does not work, copy and open the following link manually";
-		String htmlContent = getHtmlContent(link, header, text, footer);  
-		sendEmail(email, "Email verification", htmlContent);
+		String htmlContent = getHtmlContent(link, CHANGE_EMAIL_VERIFICATION_HEADER, EMAIL_VERIFICATION_TEXT, EMAIL_VERIFICATION_FOOTER);  
+		sendEmail(email, EMAIL_VERIFICATION_SUBJECT, htmlContent);
 		
 		return ResponseEntity.ok("Check your email for verification");
 	}
@@ -60,11 +50,8 @@ public class SendGridEmailSender implements IMailSender {
 	@Override
 	public ResponseEntity<String> sendVerificationTokenToNewEmail(String newEmailFromToken, String token) {
 		String link = domain + FARMER_CHANGE_EMAIL + "?token="+ token;
-		String header = "Confirmation of email change";
-		String text = "To complete email update, click the button below:";
-		String footer = "If the button does not work, copy and open the following link manually";
-		String htmlContent = getHtmlContent(link, header,text, footer);  
-		sendEmail(newEmailFromToken, "Email verification", htmlContent);
+		String htmlContent = getHtmlContent(link, CHANGE_EMAIL_VERIFICATION_HEADER, EMAIL_VERIFICATION_TEXT, EMAIL_VERIFICATION_FOOTER);  
+		sendEmail(newEmailFromToken, EMAIL_VERIFICATION_SUBJECT, htmlContent);
 		
 		return ResponseEntity.ok("Check your email for verification");
 		
@@ -77,19 +64,19 @@ public class SendGridEmailSender implements IMailSender {
 				            "<html>" +
 				            "<head><meta charset='UTF-8'></head>" +
 				            "<body style='font-family: Arial, sans-serif; text-align: center;'>" +
-				            "<h2>Reset password</h2>" +
-				            "<p>To login you can use password below:</p>" +
+				            "<h2>"+RESET_PASSWORD_HEADER+"</h2>" +
+				            "<p>"+RESET_PASSWORD_TEXT+"</p>" +
 
 				            "<p" +
 				            "style='display: inline-block; padding: 12px 24px; font-size: 16px; " +
 				            "color: white; background-color: #28a745; text-decoration: none; " +
 				            "border-radius: 5px; font-weight: bold;'>"+ genPassword +"</a>" +
 
-				            "<p style='font-size: 16px;'>We strongly recommend changing your password as soon as possible</p>" +
+				            "<p style='font-size: 16px;'>"+RESET_PASSWORD_FOOTER+"</p>" +
 				           
 				            "</body></html>";
 
-		sendEmail(email, "Reset password", htmlContent);
+		sendEmail(email, RESET_PASSWORD_HEADER, htmlContent);
 		
 		return ResponseEntity.ok("Check your email for new password");
 		

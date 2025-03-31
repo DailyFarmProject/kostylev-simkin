@@ -1,4 +1,4 @@
-package telran.daily_farm.farmer.api.dto;
+package telran.daily_farm.security.api.dto;
 
 
 import jakarta.validation.Valid;
@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import telran.daily_farm.farmer.api.dto.CoordinatesDto;
 import lombok.Builder;
 import static telran.daily_farm.api.messages.ErrorMessages.*;
 

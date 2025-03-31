@@ -1,8 +1,8 @@
-package telran.daily_farm.security.farmer_auth;
+package telran.daily_farm.security.farmer_auth.controller;
 
-import static telran.daily_farm.api.ApiConstants.*;
 import static telran.daily_farm.api.messages.ErrorMessages.LOCATION_REQUIRED;
 import static telran.daily_farm.api.messages.SuccessMessages.LOGOUT_SUCCESS;
+import static telran.daily_farm.security.api.AuthApiConstants.*;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,14 +21,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.daily_farm.api.dto.SendToRequestDto;
-import telran.daily_farm.api.dto.security.ChangePasswordRequest;
-import telran.daily_farm.api.dto.security.LoginRequestDto;
-import telran.daily_farm.api.dto.security.RefreshTokenRequestDto;
-import telran.daily_farm.api.dto.security.RefreshTokenResponseDto;
-import telran.daily_farm.api.dto.security.TokensResponseDto;
 import telran.daily_farm.farmer.api.dto.CoordinatesDto;
-import telran.daily_farm.farmer.api.dto.FarmerRegistrationDto;
 import telran.daily_farm.security.UserDetailsWithId;
+import telran.daily_farm.security.api.dto.*;
+import telran.daily_farm.security.farmer_auth.service.FarmerAuthService;
 
 @RestController
 @RequiredArgsConstructor
@@ -85,6 +81,7 @@ public class FarmerAuthController {
 	}
 	
 	@DeleteMapping(FARMER_LOGOUT)
+	@PreAuthorize("hasRole('ROLE_FARMER')")
 	public ResponseEntity<String> logoutFarmer(	@AuthenticationPrincipal UserDetailsWithId user,
 			@Parameter(description = "JWT токен", required = true) @RequestHeader("Authorization") String token) {
 		farmerAuth.logoutFarmer(user.getId(), token);
@@ -114,13 +111,13 @@ public class FarmerAuthController {
 	}
 	
 	@DeleteMapping(FARMER_REMOVE)
-	@PreAuthorize("hasRole(ROLE_FARMER)")
+	@PreAuthorize("hasRole('ROLE_FARMER')")
 	public ResponseEntity<String> removeFarmer(@AuthenticationPrincipal UserDetailsWithId user,
 			@Parameter(description = "JWT токен", required = true) @RequestHeader("Authorization") String token) {
 		return farmerAuth.removeFarmer(user.getId());
 	}
 	
-	@PreAuthorize("hasRole(ROLE_FARMER)")
+	@PreAuthorize("hasRole('ROLE_FARMER')")
 	@GetMapping(FARMER_EMAIL_CHANGE_VERIFICATION)
 	public ResponseEntity<String> sendVerificationTokenForUpdateEmail(@Valid @RequestBody SendToRequestDto sendToRequestDto,
 			@AuthenticationPrincipal UserDetailsWithId user,
@@ -137,8 +134,10 @@ public class FarmerAuthController {
 		
 	}
 
+	@PreAuthorize("hasRole('ROLE_FARMER')")
 	@GetMapping(FARMER_CHANGE_EMAIL)
-	public ResponseEntity<String> farmerUpdateEmail(@RequestParam String token) {
+	public ResponseEntity<String> farmerUpdateEmail(@RequestParam String token,
+			@AuthenticationPrincipal UserDetailsWithId user) {
 		return farmerAuth.updateEmail(token);
 	}
 	

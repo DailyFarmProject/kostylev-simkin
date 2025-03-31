@@ -13,18 +13,19 @@ import io.jsonwebtoken.JwtException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.security.TokensResponseDto;
 import telran.daily_farm.customer.api.dto.*;
 import telran.daily_farm.customer.entity.Customer;
 import telran.daily_farm.customer.entity.CustomerCredential;
 import telran.daily_farm.customer.repo.CustomerCredentialRepository;
 import telran.daily_farm.customer.repo.CustomerRepository;
 import telran.daily_farm.email_sender.service.IMailSender;
+import telran.daily_farm.security.api.dto.TokensResponseDto;
 import telran.daily_farm.security.customer_auth.CustomerAuthService;
 import telran.daily_farm.security.token.JwtService;
 import telran.daily_farm.security.token.TokenBlacklistService;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
+import static telran.daily_farm.api.ApiConstants.*;
 
 @Service
 @Slf4j
@@ -67,7 +68,7 @@ public class CustomerService implements ICustomer {
         
         String email = customerDto.getEmail();
         mailSender.sendEmailVerification(email, 
-                jwtService.generateVerificationToken(customer.getId().toString(), email), false);
+                jwtService.generateVerificationToken(customer.getId().toString(), email), CUSTOMER_EMAIL_VERIFICATION);
             log.info("Servise. Email verification sent");
         
         return ResponseEntity.ok("Customer registered successfully. Please check your email for verification.");
@@ -142,7 +143,7 @@ public class CustomerService implements ICustomer {
         log.info("Service.resendVerificationLink. Customer exists - " + email);
 
         mailSender.sendEmailVerification(email, 
-                jwtService.generateVerificationToken(customer.getId().toString(), email), false);
+                jwtService.generateVerificationToken(customer.getId().toString(), email), CUSTOMER_EMAIL_VERIFICATION);
 
         log.info("Service.resendVerificationLink. Verification link sent - " + email);
         
@@ -164,7 +165,7 @@ public class CustomerService implements ICustomer {
             log.debug("Service. Login. Email is not verificated. Send link to email -" + email);
             
             mailSender.sendEmailVerification(email,
-                    jwtService.generateVerificationToken(customer.getId().toString(), email), false);
+                    jwtService.generateVerificationToken(customer.getId().toString(), email), CUSTOMER_EMAIL_VERIFICATION);
 
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, EMAIL_IS_NOT_VERIFICATED);
         }

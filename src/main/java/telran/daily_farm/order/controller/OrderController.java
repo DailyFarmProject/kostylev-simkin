@@ -27,7 +27,7 @@ public class OrderController {
 	private final OrderService orderServise;
 
 	    
-    @PreAuthorize("hasRole(ROLE_CUSTOMER)")
+    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
 	@PostMapping(CREATE_ORDER)
 	public ResponseEntity<CreateOrderResponseDto> createOrder(@RequestBody CreateOrderRequestDto requestDto,
 			@AuthenticationPrincipal UserDetailsWithId user, @RequestHeader("Authorization") String token) {

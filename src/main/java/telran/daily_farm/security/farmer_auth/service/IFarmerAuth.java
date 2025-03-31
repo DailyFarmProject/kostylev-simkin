@@ -1,13 +1,13 @@
-package telran.daily_farm.security.farmer_auth;
+package telran.daily_farm.security.farmer_auth.service;
 
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 
-import telran.daily_farm.api.dto.security.ChangePasswordRequest;
-import telran.daily_farm.api.dto.security.LoginRequestDto;
-import telran.daily_farm.api.dto.security.TokensResponseDto;
-import telran.daily_farm.farmer.api.dto.FarmerRegistrationDto;
+import telran.daily_farm.security.api.dto.ChangePasswordRequest;
+import telran.daily_farm.security.api.dto.FarmerRegistrationDto;
+import telran.daily_farm.security.api.dto.LoginRequestDto;
+import telran.daily_farm.security.api.dto.TokensResponseDto;
 
 public interface IFarmerAuth {
 	

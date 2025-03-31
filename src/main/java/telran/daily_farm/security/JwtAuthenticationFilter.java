@@ -19,7 +19,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
-import static telran.daily_farm.api.ApiConstants.*;
 
 import java.io.IOException;
 import java.util.Date;
@@ -38,23 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String requestURI = request.getRequestURI();
 		log.info("OncePerRequestFilter. requestURI" + requestURI);
-		if (requestURI.equals(FARMER_REFRESH_TOKEN) 
-				|| requestURI.equals(FARMER_EMAIL_VERIFICATION)
-				|| requestURI.equals(FARMER_EMAIL_VERIFICATION_RESEND) 
-				|| requestURI.equals(RESET_PASSWORD)
-				|| requestURI.equals(FARMER_CHANGE_EMAIL)
-				|| requestURI.equals(FARMER_NEW_EMAIL_VERIFICATION)
-				|| requestURI.equals(FARMER_REGISTER) 
-				|| requestURI.equals(CUSTOMER_REFRESH_TOKEN)
-				|| requestURI.equals(CUSTOMER_EMAIL_VERIFICATION)
-				|| requestURI.equals(CUSTOMER_EMAIL_VERIFICATION_RESEND) 
-				|| requestURI.equals(CUSTOMER_RESET_PASSWORD)
-				|| requestURI.equals(CUSTOMER_CHANGE_EMAIL)
-				|| requestURI.equals(CUSTOMER_NEW_EMAIL_VERIFICATION)
-				|| requestURI.equals(CUSTOMER_REGISTER) 
-				|| requestURI.equals(GET_ALL_SETS) 
-				|| requestURI.equals(CUSTOMER_LOGIN)
-				|| requestURI.startsWith("/paypal") ) {
+		if (PulicEndpoints.isPublicEndpoint(requestURI)) {
 			log.info("OncePerRequestFilter. Request does not need token");
 			chain.doFilter(request, response);
 			return;
@@ -82,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 					log.info("OncePerRequestFilter. Recived userDetails + role");
 					log.info("OncePerRequestFilter. jwtService.isTokenValid - {} ");
-					
+
 					if (jwtService.isTokenValid(token, userDetails.getUsername())
 							&& jwtService.extractExpiration(token).after(new Date())) {
 						log.info("OncePerRequestFilter. Token checked - valid");

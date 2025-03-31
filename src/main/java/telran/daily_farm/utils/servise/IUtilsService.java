@@ -11,7 +11,7 @@ public interface IUtilsService {
 	
 	ResponseEntity<Map<String, String>> getAllLanguages(UUID id);
 
-	ResponseEntity<Void> changeLanguage(UUID id, String language);
+
 
 	ResponseEntity<List<String>> getFarmSetCategories(UUID id);
 

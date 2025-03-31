@@ -9,9 +9,9 @@ import telran.daily_farm.farmer.entity.Farmer;
 
 public interface FarmerRepository extends JpaRepository<Farmer, UUID>{
 
-	boolean existsByEmail(String email);
+	
 
-	Optional<Farmer> findByEmail(String username);
+	
 
 	Optional<Farmer> findByid(UUID id);
 

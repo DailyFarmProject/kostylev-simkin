@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,20 +13,24 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.server.ResponseStatusException;
 
+
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 
 @ControllerAdvice
-@Slf4j
-public class ExeptionController {
+
+public class ExceptionController {
 	
 	@ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 	
-	
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        String errorMessage = "Invalid date format. It's must be: 'yyyy-MM-dd HH:mm'.";
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
 	@ExceptionHandler(JwtException.class)
 	  public ResponseEntity<String> handleJwtException(HttpServletRequest request) {
 	        String message = (String) request.getAttribute("JWT_ERROR");

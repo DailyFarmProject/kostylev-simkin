@@ -1,21 +1,16 @@
-package telran.daily_farm.security.farmer_auth;
+package telran.daily_farm.security.farmer_auth.service;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
+import static telran.daily_farm.security.api.AuthApiConstants.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.security.ChangePasswordRequest;
-import telran.daily_farm.api.dto.security.LoginRequestDto;
-import telran.daily_farm.api.dto.security.RefreshTokenResponseDto;
-import telran.daily_farm.api.dto.security.TokensResponseDto;
-import telran.daily_farm.customer.entity.Coordinates;
 import telran.daily_farm.email_sender.service.MailSenderService;
 import telran.daily_farm.email_sender.service.SendGridEmailSender;
-import telran.daily_farm.farmer.api.dto.FarmerRegistrationDto;
 import telran.daily_farm.farmer.entity.Farmer;
-import telran.daily_farm.farmer.entity.FarmerCredential;
-import telran.daily_farm.farmer.repo.CoordinatesRepository;
 import telran.daily_farm.farmer.repo.FarmerCredentialRepository;
-import telran.daily_farm.farmer.repo.FarmerRepository;
+import telran.daily_farm.farmer.service.FarmerService;
+import telran.daily_farm.security.api.dto.*;
+import telran.daily_farm.security.entity.FarmerCredential;
 import telran.daily_farm.security.token.JwtService;
 import telran.daily_farm.security.token.TokenBlacklistService;
 
@@ -40,7 +35,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 @Slf4j
 public class FarmerAuthService implements IFarmerAuth{
-	private final FarmerRepository farmerRepo;
+	private final FarmerService farmerService;
 	private final FarmerCredentialRepository credentialRepo;
 	private final JwtService jwtService;
 	private final PasswordEncoder passwordEncoder;
@@ -50,7 +45,6 @@ public class FarmerAuthService implements IFarmerAuth{
 	
 	
 //	????
-	private final CoordinatesRepository coordinatesRepo;
 	private final SendGridEmailSender gridSender;
 	private final MailSenderService emailService;
 	
@@ -58,53 +52,21 @@ public class FarmerAuthService implements IFarmerAuth{
 	 private long languageCacheValidity ;
 	
 
-	public TokensResponseDto authenticateFarmer(String email, String password) {
-
-		Optional<Farmer> farmerOptional = farmerRepo.findByEmail(email);
-
-		if (farmerOptional.isPresent()) {
-			Farmer farmer = farmerOptional.get();
-			FarmerCredential credential = credentialRepo.findByFarmer(farmer);
-			log.info("Authenticate. Farmer " + farmer.getEmail() + " exists");
-
-			log.info("Authenticate. passwordEncoder.matches"
-					+ passwordEncoder.matches(password, credential.getHashedPassword()));
-			if (passwordEncoder.matches(password, credential.getHashedPassword())) {
-				log.info("Authenticate. Password is valid");
-				String uuid = farmer.getId().toString();
-
-				String accessToken = jwtService.generateAccessToken(uuid, email, "farmer");
-				log.info("access token - " + accessToken);
-				String refreshToken = jwtService.generateRefreshToken(uuid, email, "farmer");
-				log.info("refresh token - " + refreshToken);
-
-				credential.setRefreshToken(refreshToken);
-				credentialRepo.save(credential);
-				
-				log.info("login success!!! ");
-				return new TokensResponseDto(accessToken, refreshToken);
-			}
-		}
-		throw new BadCredentialsException(WRONG_USER_NAME_OR_PASSWORD);
-	}
-
+	
 	
 	public ResponseEntity<RefreshTokenResponseDto> refreshAccessTokenFarmer(String refreshToken) {
 
-		log.info("AuthService refreshAccessToken. Refresh access token starts - " + refreshToken);
+		log.info("AuthService refreshAccessToken.");
 
 		UUID id = UUID.fromString(jwtService.extractUserId(refreshToken));
-		Optional<Farmer> farmerOptional = farmerRepo.findByid(id);
-		FarmerCredential credential = credentialRepo.findByFarmer(new Farmer(id));
-		log.info("AuthService refreshAccessToken. Checking data from refreshToken : farmer exists - "
-				+ farmerOptional.isPresent());
-		log.info("AuthService refreshAccessToken. credential.getRefreshToken().equals(refreshToken) - "
-				+ credential.getRefreshToken().equals(refreshToken));
-		log.info("AuthService refreshAccessToken. isTokenExpired - " + jwtService.isTokenExpired(refreshToken));
-		if (farmerOptional.isPresent() && !credential.getRefreshToken().isBlank()
+		FarmerCredential credential = credentialRepo.findById(id).orElseThrow(()->
+						new BadCredentialsException(INVALID_TOKEN));
+		log.info("AuthService refreshAccessToken. Checking data from refreshToken : farmer exists");
+		log.info("AuthService refreshAccessToken. isTokenExpired - {}", jwtService.isTokenExpired(refreshToken));
+		if (!credential.getRefreshToken().isBlank()
 				&& credential.getRefreshToken().equals(refreshToken) && !jwtService.isTokenExpired(refreshToken)) {
 			return ResponseEntity.ok(new RefreshTokenResponseDto(
-					jwtService.generateAccessToken(id.toString(), farmerOptional.get().getEmail(), jwtService.extractUserRole(refreshToken))));
+					jwtService.generateAccessToken(id.toString(), credential.getEmail(), jwtService.extractUserRole(refreshToken))));
 		} 
 		throw new BadCredentialsException(INVALID_TOKEN);
 	}
@@ -113,46 +75,33 @@ public class FarmerAuthService implements IFarmerAuth{
 	@Override
 	@Transactional
 	public ResponseEntity<String> registerFarmer(FarmerRegistrationDto farmerDto , String lang) {
-		log.info("Servise. Registration of new farmer - " + farmerDto.getEmail());
+		log.info("FarmerAuthServise. Registration of new farmer - {}", farmerDto.getEmail());
 		String email = farmerDto.getEmail();
 		checkEmailIsUnique(email);
-		log.info("Servise. Checked. Email is unique");
-
+		log.info("FarmerAuthServise.Email is unique");
+		
 		Farmer farmer = Farmer.of(farmerDto);
-		log.debug("Servise. Created Entity farmer from dto");
-
-		farmer.setBalance(0.);
-		log.info("Servise. Starting balanse - 0 added successfully");
-		
-		farmer.setFarmerLanguage(lang);
-		
-		farmerRepo.save(farmer);
-		log.info("Servise. Farmer saved to database");
-		
-		redisTemplate.opsForValue().set("userID-" + farmer.getId(), lang , languageCacheValidity, TimeUnit.MILLISECONDS);
-		farmerRepo.flush();
+		log.debug("FarmerAuthServise. Created Entity farmer from dto");
 
 		FarmerCredential credential = FarmerCredential.builder().createdAt(LocalDateTime.now())
 				.password_last_updated(LocalDateTime.now())
-				.hashedPassword(passwordEncoder.encode(farmerDto.getPassword())).farmer(farmer).build();
-		credentialRepo.save(credential);
-		Coordinates coordinates = Coordinates.of(farmerDto.getCoordinates());
-//				farmerDto.getCoordinates() == null ? locationService.getCoordinatesFromAddress(farmerDto.getAddress())
-//						: );
-		coordinates.setFarmer(farmer);
-		coordinatesRepo.save(coordinates);
-
-		log.info("Servise. Coordinates added successfully ");
-
-//		Address address = Address.of(
-//				farmerDto.getAddress() == null ? locationService.getAddtessFromCoordinates(farmerDto.getCoordinates())
-//						: farmerDto.getAddress());
-//		address.setFarmer(farmer);
-//		addressRepo.save(address);
-		log.info("Service. Address added successfully");
-
+				.hashedPassword(passwordEncoder.encode(farmerDto.getPassword()))
+				.farmer(farmer)
+				.email(email)
+				.build();
+		
+		log.debug("FarmerAuthServise. Created Entity farmer from dto");
+		
+		farmer.setCredential(credential);
+		
+		
+		/// Rest?? Kafka??
+		farmerService.createFarmer(farmer, farmerDto.getCoordinates(), lang);
+		
+		redisTemplate.opsForValue().set("userID-" + farmer.getId(), lang , languageCacheValidity, TimeUnit.MILLISECONDS);
+	
 		gridSender.sendEmailVerification(email,
-				jwtService.generateVerificationToken(farmer.getId().toString(), email), true);
+				jwtService.generateVerificationToken(farmer.getId().toString(), email), FARMER_EMAIL_VERIFICATION);
 
 		return ResponseEntity.ok("Farmer added successfully. You need to verify your email");
 	}
@@ -160,15 +109,15 @@ public class FarmerAuthService implements IFarmerAuth{
 	@Override
 	public ResponseEntity<TokensResponseDto> loginFarmer(LoginRequestDto loginRequestDto) {
 		String email = loginRequestDto.getEmail();
-		log.debug("Service. Request to login farmer -" + email);
+		log.debug("FarmerAuthService. Request to login farmer -" + email);
 
-		Farmer farmer = farmerRepo.findByEmail(email).orElseThrow(()->
+		FarmerCredential credential = credentialRepo.findByEmail(email).orElseThrow(()->
 			new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
 		
-		if(!credentialRepo.findByFarmer(farmer).isVerificated()) {
+		if(!credential.isVerificated()) {
 			log.debug("Service. Login. Email is not verificated. Send link to email -" + email);
 			gridSender.sendEmailVerification(email,
-					jwtService.generateVerificationToken(farmer.getId().toString(), email), true);
+					jwtService.generateVerificationToken(credential.getId().toString(), email), FARMER_EMAIL_VERIFICATION);
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, EMAIL_IS_NOT_VERIFICATED);
 		}
 		
@@ -189,10 +138,10 @@ public class FarmerAuthService implements IFarmerAuth{
 			if (jwtService.isTokenValid(verificationToken, emailFromToken)
 					&& !jwtService.isTokenExpired(verificationToken) && !blackListService.isBlacklisted(verificationToken)) {
 				log.info("Service.emailVerification. Token is valid - " + emailFromToken);
-				Farmer farmer = farmerRepo.findByEmail(emailFromToken).orElseThrow(
+				FarmerCredential credential = credentialRepo.findByEmail(emailFromToken).orElseThrow(
 						() -> new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
 				log.info("Service.emailVerification Farmer exists");
-				FarmerCredential credential = credentialRepo.findByFarmer(farmer);
+				
 
 				credential.setVerificated(true);
 				blackListService.addToBlacklist(verificationToken);
@@ -209,20 +158,20 @@ public class FarmerAuthService implements IFarmerAuth{
 
 	@Override
 	public ResponseEntity<String> resendVerificationLink(String email) {
-		Farmer farmer = farmerRepo.findByEmail(email).orElseThrow(()->
+		FarmerCredential credential = credentialRepo.findByEmail(email).orElseThrow(()->
 			new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
 
-		emailService.sendEmailVerification(email, jwtService.generateVerificationToken(farmer.getId().toString(),email), true );
+		emailService.sendEmailVerification(email, jwtService.generateVerificationToken(credential.getId().toString(),email), FARMER_EMAIL_VERIFICATION );
 		return ResponseEntity.ok(CHECK_EMAIL_FOR_VERIFICATION_LINK);
 	}
 
 	@Override
 	@Transactional
 	public ResponseEntity<String> removeFarmer(UUID id) {
-		if (!farmerRepo.existsById(id))
+		if (!credentialRepo.existsById(id))
 			throw new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS);
 		log.info("user exists");
-		farmerRepo.deleteById(id);
+		credentialRepo.deleteById(id);
 		return ResponseEntity.ok("Farmer removed");
 	}
 
@@ -233,9 +182,7 @@ public class FarmerAuthService implements IFarmerAuth{
 	@Transactional
 	public ResponseEntity<String> logoutFarmer(UUID id, String token) {
 		log.info("Service.logoutFarmer Logout starts");
-		FarmerCredential credential = credentialRepo.findByFarmer(new Farmer(id));
-		log.info("Service.logoutFarmer Got credential - refresh token");
-		log.info("Service.logoutFarmer Got access token");
+		FarmerCredential credential = credentialRepo.findById(id).get();
 		token = token.substring(7);
 		blackListService.addToBlacklist(token);
 		log.info("Service.logoutFarmer AccessToken added to black list");
@@ -248,8 +195,8 @@ public class FarmerAuthService implements IFarmerAuth{
 	@Override
 	@Transactional
 	public ResponseEntity<TokensResponseDto> updatePassword(UUID id, ChangePasswordRequest changePasswordDto) {
-		Farmer farmer = farmerRepo.findByid(id).get();
-		FarmerCredential credential = credentialRepo.findByFarmer(farmer);
+	
+		FarmerCredential credential = credentialRepo.findById(id).get();
 		String oldPassword = credential.getHashedPassword();
 		log.info("Service. updatePassword. Old password is - " + oldPassword);
 		if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), oldPassword)) {
@@ -260,7 +207,7 @@ public class FarmerAuthService implements IFarmerAuth{
 		log.info("Service. updatePassword. New password - " + credential.getHashedPassword());
 		credential.setPassword_last_updated(LocalDateTime.now());
 
-		TokensResponseDto tokens = authenticateFarmer(farmer.getEmail(), changePasswordDto.getNewPassword() );
+		TokensResponseDto tokens = authenticateFarmer(credential.getEmail(), changePasswordDto.getNewPassword() );
 
 		return ResponseEntity.ok(tokens);
 	}
@@ -269,11 +216,11 @@ public class FarmerAuthService implements IFarmerAuth{
 	@Override
 	@Transactional
 	public ResponseEntity<String> generateAndSendNewPassword(String email) {
-		Farmer farmer = farmerRepo.findByEmail(email).orElseThrow(()->
+		FarmerCredential credential = credentialRepo.findByEmail(email).orElseThrow(()->
 			new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
 		log.info("Service. getResetPassword(). Farmer exists");
 		
-		FarmerCredential credential = credentialRepo.findByFarmer(farmer);
+		
 		String genPassword = jwtService.generatePassword(10);
 		credential.setHashedPassword(passwordEncoder.encode(genPassword));
 		
@@ -288,20 +235,20 @@ public class FarmerAuthService implements IFarmerAuth{
 	
 	
 	private void checkEmailIsUnique(String email) {
-		if (farmerRepo.existsByEmail(email))
+		if (credentialRepo.existsByEmail(email))
 			throw new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_EXISTS);
 	}
 
 
 	@Override
 	public ResponseEntity<String> sendVerificationTokenForUpdateEmail(UUID id, String newEmail) { // todo validation for email
-		Optional<Farmer> optFarmer = farmerRepo.findByEmail(newEmail);
-		if(optFarmer.isPresent())
+		Optional<FarmerCredential> optCredintial = credentialRepo.findByEmail(newEmail);
+		if(optCredintial.isPresent())
 			throw new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_EXISTS);
 		
-		Farmer farmer = farmerRepo.findByid(id).get();
-		String email = farmer.getEmail();
-		gridSender.sendChangeEmailVerification(email, jwtService.generateVerificationTokenForUpdateEmail(farmer.getId().toString(),email, newEmail));
+		FarmerCredential credential = credentialRepo.findById(id).get();
+		String email = credential.getEmail();
+		gridSender.sendChangeEmailVerification(email, jwtService.generateVerificationTokenForUpdateEmail(credential.getId().toString(),email, newEmail));
 		return ResponseEntity.ok(CHECK_EMAIL_FOR_VERIFICATION_LINK + " - " + email);
 	}
 
@@ -326,7 +273,7 @@ public class FarmerAuthService implements IFarmerAuth{
 
 	@Override
 	@Transactional
-	public ResponseEntity<String> updateEmail(String verificationToken) { // todo validation for email
+	public ResponseEntity<String> updateEmail(String verificationToken) { 
 		
 		
 		log.info("Service. Request updateEmail");
@@ -337,13 +284,15 @@ public class FarmerAuthService implements IFarmerAuth{
 			log.info("Service.updateEmail New email from token - " + newEmailFromToken);
 			if (jwtService.isTokenValid(verificationToken, oldEmailFromToken)
 					 && !blackListService.isBlacklisted(verificationToken)) {
-				Farmer farmer = farmerRepo.findByEmail(oldEmailFromToken).orElseThrow(
+				
+				
+				FarmerCredential credential = credentialRepo.findByEmail(oldEmailFromToken).orElseThrow(
 						() -> new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_IS_NOT_EXISTS));
-				Optional<Farmer> optFarmer = farmerRepo.findByEmail(newEmailFromToken);
+				Optional<FarmerCredential> optFarmer =credentialRepo.findByEmail(oldEmailFromToken);
 				if(optFarmer.isPresent())
 					throw new ResponseStatusException(HttpStatus.CONFLICT, FARMER_WITH_THIS_EMAIL_EXISTS);
 				log.info("Service.updateEmail Farmer exists");
-				farmer.setEmail(newEmailFromToken);
+				credential.setEmail(newEmailFromToken);
 				log.info("Service.updateEmail New email saved - " + newEmailFromToken);
 				blackListService.addToBlacklist(verificationToken);
 				log.info("Service.updateEmail. Token added to blacklist");
@@ -355,4 +304,36 @@ public class FarmerAuthService implements IFarmerAuth{
 		}
 		return ResponseEntity.ok(EMAIL_IS_VERIFICATED);
 	}
+	
+	
+	
+	private TokensResponseDto authenticateFarmer(String email, String password) {
+
+		Optional<FarmerCredential> credentialOptional = credentialRepo.findByEmail(email);
+
+		if (credentialOptional.isPresent()) {
+			FarmerCredential credential = credentialOptional.get();
+			log.info("Authenticate. Farmer {} exists ", credential.getEmail());
+
+			log.info("Authenticate. passwordEncoder.matches - {}",
+					 passwordEncoder.matches(password, credential.getHashedPassword()));
+			if (passwordEncoder.matches(password, credential.getHashedPassword())) {
+				log.info("Authenticate. Password is valid");
+				String uuid = credential.getId().toString();
+
+				String accessToken = jwtService.generateAccessToken(uuid, email, "farmer");
+				log.info("access token - {}", accessToken);
+				String refreshToken = jwtService.generateRefreshToken(uuid, email, "farmer");
+				log.info("refresh token - {}", refreshToken);
+
+				credential.setRefreshToken(refreshToken);
+				credentialRepo.save(credential);
+				
+				log.info("login success!!! ");
+				return new TokensResponseDto(accessToken, refreshToken);
+			}
+		}
+		throw new BadCredentialsException(WRONG_USER_NAME_OR_PASSWORD);
+	}
+
 }

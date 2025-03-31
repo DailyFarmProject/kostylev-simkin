@@ -20,10 +20,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import telran.daily_farm.customer.entity.Coordinates;
 import telran.daily_farm.farm_set.entity.FarmSet;
-import telran.daily_farm.farmer.api.dto.FarmerRegistrationDto;
 import telran.daily_farm.order.entity.OrderFarmSet;
+import telran.daily_farm.security.api.dto.FarmerRegistrationDto;
+import telran.daily_farm.security.entity.FarmerCredential;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,8 +41,8 @@ public class Farmer {
 	@UuidGenerator
 	UUID id;
 
-	@Column(unique = true, nullable = false)
-	String email;
+//	@Column(unique = true, nullable = false)
+//	String email;
 
 	@Column(nullable = false)
 	String company;
@@ -57,6 +57,7 @@ public class Farmer {
 
 	@OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL)
 	Coordinates coordinates;
+
 
 	@OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL)
 	FarmerCredential credential;
@@ -78,7 +79,9 @@ public class Farmer {
 	}
 
 	public static Farmer of(FarmerRegistrationDto dto) {
-		return Farmer.builder().email(dto.getEmail()).phone(dto.getPhone()).company(dto.getCompany()).build();
+		return Farmer.builder()
+//				.email(dto.getEmail())
+				.phone(dto.getPhone()).company(dto.getCompany()).build();
 	}
 
 }

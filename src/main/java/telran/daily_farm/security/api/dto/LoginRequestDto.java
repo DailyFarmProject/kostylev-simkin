@@ -1,4 +1,4 @@
-package telran.daily_farm.api.dto.security;
+package telran.daily_farm.security.api.dto;
 
 import static telran.daily_farm.api.messages.ErrorMessages.*;
 

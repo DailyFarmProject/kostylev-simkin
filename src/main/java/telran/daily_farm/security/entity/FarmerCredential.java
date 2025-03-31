@@ -1,13 +1,13 @@
-package telran.daily_farm.farmer.entity;
+package telran.daily_farm.security.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import telran.daily_farm.farmer.entity.Farmer;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,12 +26,16 @@ import lombok.Setter;
 @Table(name = "farmer_credentials")
 public class FarmerCredential {
     @Id
-    @GeneratedValue
-    UUID id;//why not private?
+    private UUID id;
 
-    @OneToOne
-    @JoinColumn(name = "farmer_id", nullable = false)
-    Farmer farmer;//why not private?
+    
+    @OneToOne(cascade = CascadeType.ALL)
+    @MapsId 
+    private Farmer farmer;
+    
+	@Column(unique = true, nullable = false)
+	private String email;
+
 
     @Column(nullable = false)
     private String hashedPassword;

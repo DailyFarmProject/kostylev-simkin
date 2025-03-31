@@ -3,12 +3,12 @@ package telran.daily_farm.security.customer_auth;
 import static telran.daily_farm.api.messages.ErrorMessages.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.security.RefreshTokenResponseDto;
-import telran.daily_farm.api.dto.security.TokensResponseDto;
 import telran.daily_farm.customer.entity.Customer;
 import telran.daily_farm.customer.entity.CustomerCredential;
 import telran.daily_farm.customer.repo.CustomerCredentialRepository;
 import telran.daily_farm.customer.repo.CustomerRepository;
+import telran.daily_farm.security.api.dto.RefreshTokenResponseDto;
+import telran.daily_farm.security.api.dto.TokensResponseDto;
 import telran.daily_farm.security.token.JwtService;
 
 import org.springframework.http.ResponseEntity;

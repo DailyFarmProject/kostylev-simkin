@@ -42,7 +42,7 @@ public class OrderService implements IOrderService {
 		log.info("OrderService : Create order. Got farmset from database description - {}", farmSet.getDescription());
 
 		Farmer farmer = farmSet.getFarmer();
-		log.info("OrderService : Create order:  Got farmer from database, email - {}", farmer.getEmail());
+		//log.info("OrderService : Create order:  Got farmer from database, email - {}", farmer.getEmail());
 
 		if (farmSet.getAvailibleCount() == 0)
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You ara late");

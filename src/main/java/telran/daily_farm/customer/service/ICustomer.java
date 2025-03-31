@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 
 import jakarta.validation.Valid;
-import telran.daily_farm.api.dto.security.TokensResponseDto;
 import telran.daily_farm.customer.api.dto.*;
+import telran.daily_farm.security.api.dto.TokensResponseDto;
 
 public interface ICustomer {
 	//Registration and verification

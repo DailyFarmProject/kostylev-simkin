@@ -4,14 +4,12 @@ package telran.daily_farm.utils.servise;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import telran.daily_farm.farm_set.repo.FarmSetCategoryRepository;
 import telran.daily_farm.farm_set.repo.FarmSetSizeRepository;
@@ -57,15 +55,7 @@ public class UtilService  implements IUtilsService{
 	}
 
 
-	@Override
-	@Transactional
-	public ResponseEntity<Void> changeLanguage(UUID id, String language) {
-		
-		farmerRepo.findByid(id).get().setFarmerLanguage(language);
-		redisTemplate.opsForValue().set("userID-" + id, language , languageCacheValidity, TimeUnit.MILLISECONDS);
-		
-		return ResponseEntity.ok().build();
-	}
+
 
 
 	@Override

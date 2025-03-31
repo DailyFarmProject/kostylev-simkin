@@ -52,7 +52,6 @@ public class FarmSetService  implements IFarmSetService{
 		
 		FarmSet farmSet = FarmSet.builder()
 				.availibleCount(farmSetDto.getAvailibleCount())
-//				.abailible(true)
 				.description(farmSetDto.getDescription())
 				.price(farmSetDto.getPrice())
 				.farmer(farmerRepo.findByid(id).get())
@@ -76,7 +75,8 @@ public class FarmSetService  implements IFarmSetService{
 	@Override
 	@Transactional
 	public ResponseEntity<List<FarmSetResponseDto>> getAbailableFarmSetsForFarmer(UUID id) {
-		List<FarmSetResponseDto> list = farmerRepo.findByid(id).get().getFarmSets().stream().map(fs->FarmSet.buildFromEntity(fs)).toList();
+		
+		List<FarmSetResponseDto> list = farmSetRepo.findByFarmerId(id).stream().map(fs->FarmSet.buildFromEntity(fs)).toList();
 		return translateService.translateOkResponse(ResponseEntity.ok(list), utilService.getUserLanguage(id));
 	}
 
