@@ -2,7 +2,7 @@ package telran.daily_farm.payment.paypal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.entity.order.OrderFarmSet;
+import telran.daily_farm.order.entity.OrderFarmSet;
 import telran.daily_farm.payment.entity.Payment;
 import telran.daily_farm.payment.repo.PaymentRepository;
 

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import telran.daily_farm.entity.Customer;
+import telran.daily_farm.customer.entity.Customer;
 
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 

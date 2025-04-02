@@ -17,7 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import telran.daily_farm.entity.order.OrderFarmSet;
+import telran.daily_farm.order.entity.OrderFarmSet;
 
 @NoArgsConstructor
 @AllArgsConstructor

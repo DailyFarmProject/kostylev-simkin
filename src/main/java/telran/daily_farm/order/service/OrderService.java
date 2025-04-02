@@ -12,14 +12,14 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.order.CreateOrderRequestDto;
-import telran.daily_farm.api.dto.order.CreateOrderResponseDto;
-import telran.daily_farm.api.dto.order.OrderStatus;
 import telran.daily_farm.customer.repo.CustomerRepository;
-import telran.daily_farm.entity.Farmer;
-import telran.daily_farm.entity.farm_set.FarmSet;
-import telran.daily_farm.entity.order.OrderFarmSet;
+import telran.daily_farm.farm_set.entity.FarmSet;
 import telran.daily_farm.farm_set.repo.FarmSetRepository;
+import telran.daily_farm.farmer.entity.Farmer;
+import telran.daily_farm.order.api.dto.CreateOrderRequestDto;
+import telran.daily_farm.order.api.dto.CreateOrderResponseDto;
+import telran.daily_farm.order.api.dto.OrderStatus;
+import telran.daily_farm.order.entity.OrderFarmSet;
 import telran.daily_farm.order.repo.OrderRepository;
 import telran.daily_farm.payment.service.PaymentService;
 
@@ -42,7 +42,7 @@ public class OrderService implements IOrderService {
 		log.info("OrderService : Create order. Got farmset from database description - {}", farmSet.getDescription());
 
 		Farmer farmer = farmSet.getFarmer();
-		log.info("OrderService : Create order:  Got farmer from database, email - {}", farmer.getEmail());
+		//log.info("OrderService : Create order:  Got farmer from database, email - {}", farmer.getEmail());
 
 		if (farmSet.getAvailibleCount() == 0)
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You ara late");

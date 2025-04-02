@@ -1,11 +1,17 @@
 package telran.daily_farm.farm_set.repo;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import telran.daily_farm.entity.farm_set.FarmSet;
+import telran.daily_farm.farm_set.entity.FarmSet;
 
 public interface FarmSetRepository extends JpaRepository<FarmSet, UUID>{
+
+	List<FarmSet> findByFarmerId(UUID id);
+
+	
+
 
 }

@@ -17,8 +17,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.extern.slf4j.Slf4j;
-import telran.daily_farm.api.dto.AddressDto;
-import telran.daily_farm.api.dto.CoordinatesDto;
+import telran.daily_farm.location.dto.*;
+import telran.daily_farm.location.dto.AddressDto;
+import telran.daily_farm.location.dto.CoordinatesDto;
 import telran.daily_farm.location.dto.LocationIqResponse;
 
 @Service

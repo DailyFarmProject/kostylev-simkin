@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import telran.daily_farm.entity.farm_set.FarmSetCategory;
+import telran.daily_farm.farm_set.entity.FarmSetCategory;
 
 public interface FarmSetCategoryRepository extends JpaRepository<FarmSetCategory, UUID>{
 
