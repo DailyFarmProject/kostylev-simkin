@@ -28,10 +28,10 @@ public class PulicEndpoints {
 	        CUSTOMER_CHANGE_EMAIL,
 	        CUSTOMER_NEW_EMAIL_VERIFICATION,
 	        CUSTOMER_REGISTER,
-	        CUSTOMER_LOGIN
-	        
-	       // GET_ALL_SETS,
-	     //   GET_LANGUAGES
+	        CUSTOMER_LOGIN,
+	        "/farm-set/order",
+	        "/farm-set/cancel_order"
+
 	    );
 	    
 	    private static final String PAYPAL_PREFIX = "/paypal";

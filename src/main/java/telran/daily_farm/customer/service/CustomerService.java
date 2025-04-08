@@ -382,4 +382,10 @@ public class CustomerService implements ICustomer {
         }
         return ResponseEntity.ok(EMAIL_IS_VERIFICATED);
     }
+
+    @Override
+	public Customer getCustomer(UUID customerId) {
+		
+		return customerRepo.findById(customerId).get();
+	}
 }

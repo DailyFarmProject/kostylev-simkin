@@ -14,7 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import telran.daily_farm.order.api.dto.CreateOrderRequestDto;
 import telran.daily_farm.order.api.dto.CreateOrderResponseDto;
-import telran.daily_farm.order.service.OrderService;
+import telran.daily_farm.order.api.dto.FarmSetRequestForOrderDto;
+import telran.daily_farm.order.service.ProxyOrderService;
 import telran.daily_farm.security.UserDetailsWithId;
 
 import static telran.daily_farm.api.ApiConstants.*;
@@ -24,17 +25,14 @@ import static telran.daily_farm.api.ApiConstants.*;
 @RequiredArgsConstructor
 public class OrderController {
 
-	private final OrderService orderServise;
+	private final ProxyOrderService orderServise;
 
 	    
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
 	@PostMapping(CREATE_ORDER)
-	public ResponseEntity<CreateOrderResponseDto> createOrder(@RequestBody CreateOrderRequestDto requestDto,
+	public ResponseEntity<CreateOrderResponseDto> createOrder(@RequestBody FarmSetRequestForOrderDto requestDto,
 			@AuthenticationPrincipal UserDetailsWithId user, @RequestHeader("Authorization") String token) {
-		CreateOrderResponseDto response = orderServise.createOrder(requestDto , user.getId());
-		
-		log.info("Order controller: response ( sum - {} , link - {}", response.getSumOfOrder(), response.getPaymentLink());
-		
+    	CreateOrderResponseDto response= orderServise.createOrder(requestDto , user.getId());
 		return  ResponseEntity.ok(response);
 	}
 	

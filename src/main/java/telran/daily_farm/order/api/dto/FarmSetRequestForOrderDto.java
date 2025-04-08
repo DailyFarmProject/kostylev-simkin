@@ -10,11 +10,10 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class CreateOrderRequestDto {
+public class FarmSetRequestForOrderDto {
 	
 	@NotBlank
 	private UUID farmSetId;
 	
-	@NotBlank
-	private UUID customerId;
+	
 }
