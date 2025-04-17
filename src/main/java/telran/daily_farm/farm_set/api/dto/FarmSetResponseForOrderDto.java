@@ -24,7 +24,7 @@ public class FarmSetResponseForOrderDto {
 	public static FarmSetResponseForOrderDto fromFarmSet(FarmSet farmSet) {
 		
 		return FarmSetResponseForOrderDto.builder()
-				.farmerId(farmSet.getFarmer().getId())
+				.farmerId(farmSet.getFarmerId())
 				.farmSetId(farmSet.getId())
 				.price(farmSet.getPrice())
 				.build();

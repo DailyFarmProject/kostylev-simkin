@@ -61,12 +61,12 @@ public class Farmer {
 	@OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL)
 	FarmerCredential credential;
 
-	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
-	List<FarmSet> farmSets;;
+//	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
+//	List<FarmSet> farmSets;
 
 //	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
-	@Column
-	List<UUID> orders;
+//	@Column
+//	List<UUID> orders;
 
 //	@Embedded
 //	PayPalConfigDto paypalDetails;

@@ -32,37 +32,38 @@ public class FarmSet {
 	@Id
 	@GeneratedValue
 	@UuidGenerator
-	UUID id;
+	private UUID id;
 
 	@Column(nullable = false)
-	String description;
+	private String description;
 
 	@Column(nullable = false)
 	private double price;
 
 	@Column(nullable = false)
-	int availibleCount;
+	private int availibleCount;
 
 	@Column(nullable = false)
-	boolean abailible;
+	private boolean abailible;
 
 	@Column(nullable = false)
-	LocalDateTime pickupTimeStart;
+	private LocalDateTime pickupTimeStart;
 
 	@Column(nullable = false)
-	LocalDateTime pickupTimeEnd;
+	private LocalDateTime pickupTimeEnd;
 
-	@ManyToOne
-	@JoinColumn(name = "farmer_id", nullable = false)
-	Farmer farmer;
+//	@ManyToOne
+//	@JoinColumn(name = "farmer_id", nullable = false)
+	@Column(name = "farmer_id", nullable = false)
+	private UUID farmerId;
 
 	@ManyToOne
 	@JoinColumn(name = "size_id", nullable = false)
-	FarmSetSize size;
+	private FarmSetSize size;
 
 	@ManyToOne
 	@JoinColumn(name = "category_id", nullable = false)
-	FarmSetCategory category;
+	private FarmSetCategory category;
 
 
 

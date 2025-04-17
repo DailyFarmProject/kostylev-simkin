@@ -34,7 +34,6 @@ import static telran.daily_farm.api.messages.ErrorMessages.*;
 @AllArgsConstructor
 public class FarmSetService implements IFarmSetService {
 
-	private final FarmerService farmerService;
 	private final FarmSetSizeRepository sizeRepo;
 	private final FarmSetCategoryRepository categoryRepo;
 	private final FarmSetRepository farmSetRepo;
@@ -53,10 +52,9 @@ public class FarmSetService implements IFarmSetService {
 		FarmSetCategory farmSetCategory = categoryRepo.findByCategory(category)
 				.orElseThrow(() -> new IllegalArgumentException(CATEGORY_IS_NOT_AVAILABLE));
 
-		Farmer farmer = farmerService.getFarmer(id);
 
 		FarmSet farmSet = FarmSet.builder().availibleCount(farmSetDto.getAvailibleCount())
-				.description(farmSetDto.getDescription()).price(farmSetDto.getPrice()).farmer(farmer)
+				.description(farmSetDto.getDescription()).price(farmSetDto.getPrice()).farmerId(id)
 				.category(farmSetCategory).size(farmSetSize).pickupTimeEnd(farmSetDto.getPickupTimeEnd())
 				.pickupTimeStart(farmSetDto.getPickupTimeStart()).build();
 
