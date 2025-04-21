@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import telran.daily_farm.farm_set.entity.FarmSet;
-import telran.daily_farm.order.entity.OrderFarmSet;
 import telran.daily_farm.security.api.dto.FarmerRegistrationDto;
 import telran.daily_farm.security.entity.FarmerCredential;
 
@@ -62,11 +61,12 @@ public class Farmer {
 	@OneToOne(mappedBy = "farmer", cascade = CascadeType.ALL)
 	FarmerCredential credential;
 
-	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
-	List<FarmSet> farmSets;;
+//	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
+//	List<FarmSet> farmSets;
 
-	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
-	List<OrderFarmSet> orders;;
+//	@OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL)
+//	@Column
+//	List<UUID> orders;
 
 //	@Embedded
 //	PayPalConfigDto paypalDetails;

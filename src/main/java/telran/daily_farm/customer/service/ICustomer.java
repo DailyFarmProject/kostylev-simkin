@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import jakarta.validation.Valid;
 import telran.daily_farm.customer.api.dto.*;
+import telran.daily_farm.customer.entity.Customer;
 import telran.daily_farm.security.api.dto.TokensResponseDto;
 
 public interface ICustomer {
@@ -29,14 +30,7 @@ public interface ICustomer {
     ResponseEntity<String> sendVerificationTokenForUpdateEmail(UUID id, @Valid String newEmail);//+
     ResponseEntity<String> sendVerificationTokenToNewEmail(String token);
     ResponseEntity<String> updateEmail(@Valid String verificationToken);
-    
-    
-    
-    
-    
-    
-    
-    
-    
+	
+    Customer getCustomer(UUID customerId);
     
 }

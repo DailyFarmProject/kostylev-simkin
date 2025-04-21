@@ -113,4 +113,10 @@ public class FarmerService implements IFarmer {
 		
 		return ResponseEntity.ok().build();
 	}
+
+	@Override
+	public Farmer getFarmer(UUID id) {
+		
+		return farmerRepo.findByid(id).get();
+	}
 }

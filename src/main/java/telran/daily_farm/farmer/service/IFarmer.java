@@ -22,5 +22,7 @@ public interface IFarmer {
 	ResponseEntity<String> updateCompany(UUID id, String company);
 	
 	ResponseEntity<Void> changeLanguage(UUID id, String language);
+	
+	Farmer getFarmer(UUID id);
 
 }

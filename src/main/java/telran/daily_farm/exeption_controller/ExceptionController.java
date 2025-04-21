@@ -28,8 +28,7 @@ public class ExceptionController {
 	
 	@ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        String errorMessage = "Invalid date format. It's must be: 'yyyy-MM-dd HH:mm'.";
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 	@ExceptionHandler(JwtException.class)
 	  public ResponseEntity<String> handleJwtException(HttpServletRequest request) {
