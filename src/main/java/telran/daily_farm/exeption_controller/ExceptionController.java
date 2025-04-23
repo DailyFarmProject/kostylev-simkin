@@ -10,7 +10,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
+//import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -60,11 +60,11 @@ public class ExceptionController {
 		return new ResponseEntity<String>(message, HttpStatus.BAD_REQUEST);
 	}
 	
-	@ExceptionHandler(HandlerMethodValidationException.class)
-	ResponseEntity<String> argumentNotVAlidHandler(HandlerMethodValidationException e){
-		String message = e.getAllErrors().stream().map(error -> error.getDefaultMessage())
-				.collect(Collectors.joining("; "));
-		return new ResponseEntity<String>(message, HttpStatus.BAD_REQUEST);
-	}
+//	@ExceptionHandler(HandlerMethodValidationException.class)
+//	ResponseEntity<String> argumentNotVAlidHandler(HandlerMethodValidationException e){
+//		String message = e.getAllErrors().stream().map(error -> error.getDefaultMessage())
+//				.collect(Collectors.joining("; "));
+//		return new ResponseEntity<String>(message, HttpStatus.BAD_REQUEST);
+//	}
 
 }
