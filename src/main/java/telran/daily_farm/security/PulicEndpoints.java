@@ -30,7 +30,9 @@ public class PulicEndpoints {
 	        CUSTOMER_REGISTER,
 	        CUSTOMER_LOGIN,
 	        "/farm-set/order",
-	        "/farm-set/cancel_order"
+	        "/farm-set/cancel_order",
+	        
+	        "/actuator/health"
 
 	    );
 	    
